@@ -1,0 +1,96 @@
+//#include library.oajs
+
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+
+journal_doing = "I am already doing something else."
+journal_cant_wood = "You can't get any wood from that."
+journal_cant_mine = "You can't mine or dig anything there."
+journal_start_dig = "You start digging..."
+journal_start_mine = "You start mining..."
+journal_start_wood = "You start lumberjacking..."
+journal_no_metal = "There is no metal here to mine."
+journal_no_sand = "There's no sand left there."
+journal_no_wood = "There's no wood here to chop..."
+journal_stop_mine = "You stop mining."
+journal_stop_wood = "You stop lumberjacking."
+
+// SKILLS
+skill_armslore = '4'
+
+function gatther3(tool_type,x,y){
+
+	FIRST_STAGE = journal_doing+'|'+journal_cant_mine+'|'+journal_cant_wood+'|'+journal_start_dig+'|'+journal_start_mine+'|'+journal_start_wood
+	SECOND_STAGE = journal_no_metal+'|'+journal_no_sand+'|'+journal_no_wood+'|'+journal_stop_mine+'|'+journal_stop_wood
+	
+	journal_not_mineable_MSG = journal_cant_mine+'|'+journal_cant_wood
+	journal_mineable_MSG = journal_start_dig+'|'+journal_start_mine+'|'+journal_start_wood
+	journal_no_resoucer_MSG = journal_no_metal+'|'+journal_no_sand+'|'+journal_no_wood
+	journal_stop_mining_MSG = journal_stop_mine+'|'+journal_stop_wood
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+	
+		gather_tool = equip_tool(tool_type);
+		if(gather_tool == null){
+			return;
+		}
+			
+		Orion.UseObject(gather_tool);
+		if (Orion.WaitForTarget(3000))
+			Orion.TargetTileRelative('any', x, y, 0);
+		
+		journal_obj = Orion.WaitJournal(FIRST_STAGE,0,Orion.Now() + 300*1000)
+		
+		if(journal_doing.indexOf(journal_obj.Text())  != -1){
+				Orion.Print('journal_doing')
+			continue;
+		}
+		
+		if(journal_not_mineable_MSG.indexOf(journal_obj.Text())  != -1){
+				Orion.Print('journal_not_mineable')
+			return;
+		}
+		
+		if(journal_mineable_MSG.indexOf(journal_obj.Text())  != -1){
+				Orion.Print('journal_mineable')
+				//break;
+		}
+		// -------------------------
+
+		// WAIT END --------------
+		journal_obj = Orion.WaitJournal(SECOND_STAGE,0,Orion.Now() + 300*1000)
+		
+		TextWindow.Open();
+		TextWindow.Print(journal_obj.Text());
+
+		if(journal_no_resoucer_MSG.indexOf(journal_obj.Text())  != -1){
+			Orion.Print('journal_no_sand')
+			return;
+		}
+		
+		if(journal_stop_mining_MSG.indexOf(journal_obj.Text())  != -1){
+			Orion.Print('journal_stop_mining')
+			//break;
+		}
+			
+		// -------------------------
+		
+	}
+}
+
+gatther3(pickaxe_type,0,0)
+
+break
+
+
+
+// ------------------------------------------------------------------
+

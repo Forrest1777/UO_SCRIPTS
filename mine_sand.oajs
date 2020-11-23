@@ -1,0 +1,49 @@
+//#include library.oajs
+
+//Orion.ClearJournal('*');
+
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+
+// SKILLS
+skill_armslore = '4'
+
+
+function mine_sand(){
+	while(true){
+	// =====================================
+		
+		fileObject = Orion.NewFile();
+		fileObject.Open('G:\\Games\\UO\\scripts\\sand_mine_pos_list.txt');
+		while(file_line = fileObject.ReadLine()){
+		
+			c_position = file_line.split(',')
+			Orion.WalkTo(c_position[0],c_position[1],c_position[2],0,255,0)
+			
+			train_arms_lore();
+			
+			obj_list = Orion.FindType('any','any','ground','live',0);
+			if(obj_list.length > 1){
+	//			Orion.Print(obj_list.length)
+				Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+				continue
+			}
+			
+			gatther(pickaxe_type,0,0)
+			
+			if(!verify_tool(pickaxe_type))
+				break
+	
+		}
+		fileObject.Close();
+		
+		if(!verify_tool(pickaxe_type))
+			break
+		
+	}
+}

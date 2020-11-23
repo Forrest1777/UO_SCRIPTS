@@ -1,0 +1,4 @@
+//#include library.oajs
+
+TextWindow.Open();
+TextWindow.Print('text');

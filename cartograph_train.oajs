@@ -1,0 +1,16 @@
+//#include library.oajs
+
+
+while(true){
+	
+	Orion.UseSkill('Cartography');
+	
+	menu0 = Orion.GetMenu('last');
+	
+	if (menu0.Name() === "What do you want to create?"){
+//			menu0.Select('Local Map');
+			menu0.Select('Regional Map');
+	}
+	
+	Orion.Wait(2*1000)
+}

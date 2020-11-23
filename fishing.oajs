@@ -1,0 +1,175 @@
+//#include library.oajs
+
+
+
+animal_pig = '0x00CB'
+animal_chicken = '0x00D0' 
+animal_cat = '0x00C9'
+animal_sheep = '0x00CF'
+animal_guard_dog = '0x00E1'
+animal_cow = '0x00D8'
+animal_horse = '0x00C8'
+animal_starling = '0x0006'
+animal_goat = '0x00D1'
+animal_bull = '0x00E8'
+animal_rabbit = '0x00CD'
+animal_towhee = '0x0006'
+animal_golden_hawk = '0x0005'
+
+selected_animals = [
+//	animal_pig,
+//	animal_chicken,
+//	animal_cat
+	animal_sheep,
+//	animal_guard_dog
+	animal_cow,
+//	animal_horse,
+//	animal_starling,
+	animal_goat,
+//	animal_bull
+//	animal_rabbit
+	'AAA'
+	]
+
+
+
+//backpack_type = '0x0E75'
+//obj_list = Orion.FindType(backpack_type,-1,'ground','', 100);
+//Orion.UseObject(obj_list[0]);
+//Orion.MoveItem(obj_list[0], 0, Player.Container());
+//back_pack = Orion.FindObject(obj_list[0]);
+//Orion.Print(obj_list[0].X(),obj_list[0].Y(),obj_list[0].Z());
+//break
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y()]);
+//break
+
+MAX_ANIMALS = 4
+
+BANK_POS = [1447,1667]
+RESS_POS = [1352,1777]
+//ANIMAL_TRAIN_POS = [1296,1761]
+ANIMAL_TRAIN_POS = [4302,2822]
+
+
+skill_taming = 'Animal Taming'
+skill_ani_lore = 'Animal Lore'
+
+tame_sucssess_msg = "You successfully tame the"
+tame_fail_msg = "You must wait to perform another action.|You're too far away to continue taming.|The creature isn't in your line of sight."
+tame_cant_msg = "You have no chance of taming this creature!|You cannot tame this!|What you selected does not seem to exist.|That is not within your line of sight.|belongs to someone else!|And have made the creature unresponsive to taming.|has angered the beast!|You failed to tame the creature."
+tame_tamed_msg = "That creature looks pretty tame already."
+//tame_wait_msg = 'You must wait to perform another action.'
+
+tame_result_mgs = tame_sucssess_msg+'|'+tame_fail_msg+'|'+tame_cant_msg+'|'+tame_tamed_msg
+
+//Orion.Info();
+//break
+
+
+//TextWindow.Open();
+//TextWindow.Print(Player.Name());
+//break
+
+//journal_msg = Orion.InJournal('exist')
+//TextWindow.Open();
+//TextWindow.Print(journal_msg.Text());
+//break
+
+//animal_list = Orion.FindType(array_to_list(selected_animals),-1,'ground','', 200);
+//Orion.Print(animal_list[0]);
+//Orion.TargetObject(animal_list[0]);
+//Orion.Print(Orion.ClientLastTarget());
+//break
+
+
+function BetterWalkTo(x, y, z, distanceXY, distanceZ, run, openDoor){
+	for(walk_tryes=0;walk_tryes<10;walk_tryes++){
+		Orion.Print(walk_tryes)
+		if(Orion.WalkTo(x, y, z, distanceXY, distanceZ+(10-walk_tryes), run, openDoor))
+			return true
+		Orion.Wait(500)
+	}
+	return false
+}
+
+
+function sell_animals(animal_trainer_pos){
+	Orion.WalkTo(animal_trainer_pos[0]+1	,animal_trainer_pos[1]+1	,5,0,255,1)
+	Orion.WalkTo(animal_trainer_pos[0]+1	,animal_trainer_pos[1]			,5,0,255,1)
+	Orion.WalkTo(animal_trainer_pos[0]			,animal_trainer_pos[1]+1	,5,0,255,1)
+	Orion.WalkTo(animal_trainer_pos[0]-1		,animal_trainer_pos[1]-1		,5,0,255,1)
+	Orion.WalkTo(animal_trainer_pos[0]-1		,animal_trainer_pos[1]			,5,0,255,1)
+	Orion.WalkTo(animal_trainer_pos[0]			,animal_trainer_pos[1]-1		,5,0,255,1)
+	Orion.Wait(10*1000)
+	animal_list = Orion.FindType(array_to_list(selected_animals),-1,'ground','', 200);
+	
+	
+	for(c_animal=0;c_animal<animal_list.length;c_animal++){
+		animal_obj = Orion.FindObject(animal_list[c_animal]);
+		Orion.Say('sell')
+		Orion.WaitForTarget(1000);
+		Orion.TargetObject(animal_list[c_animal]);
+		Orion.Wait(2000)
+		animal_count = 0
+	}
+}
+		
+animal_count = 0
+tamed_list = []
+function fishing(){
+
+
+		if(journal_obj == null)
+			continue
+		if(tame_sucssess_msg.indexOf(journal_obj.Text().replace(" "+taming_target.Name(),""))  != -1){
+			//Orion.Print('Tamed!')
+			//Orion.Say(taming_target.Name() + ' release') // RELEASE
+			Orion.Print(journal_obj.Text())
+			Orion.Say('all follow me') // FOLLOW
+			animal_pos_list[nearest_animal_index][0] = 0
+			animal_pos_list[nearest_animal_index][1] = 0
+			animal_count++
+			add_item(tamed_list,taming_target.Serial())
+			Orion.Print(animal_count)
+		}
+	
+
+
+}
+//tame_prox()
+//sell_animals(ANIMAL_TRAIN_POS)
+//break
+
+// MAIN ---------------------------------------------------------------------
+while(true){
+
+	fileObject = Orion.NewFile();
+	fileObject.Open('G:\\Games\\UO\\scripts\\fishing_spots.txt');
+	while(file_line = fileObject.ReadLine()){
+	
+		c_position = file_line.split(',')
+		//Orion.Print([c_position[0],c_position[1],c_position[2]])
+		Orion.WalkTo(c_position[0],c_position[1],c_position[2],0,255,1)
+		
+		tame_prox()
+	
+	}
+	fileObject.Close();
+	
+	if(animal_count > 0)
+		sell_animals(ANIMAL_TRAIN_POS)
+	
+}
+// ---------------------------------------------------------------------------------
+
+//Orion.WalkTo(4302,2823,5,0,255,1)
+
+
+
+
+// -----------------------------------------------------------------------------------------------
+break
+//obj_list = Orion.FindType('graphic');
+//Orion.Print(animal_obj_list[nearest_animal_index])
+//Orion.UseSkill('Animal Lore')

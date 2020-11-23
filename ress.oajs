@@ -1,0 +1,48 @@
+//#include library.oajs
+
+HEAVY_LOAD = 80
+
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//improved_WalkTo(2621,609,7,255,0,0)
+//break
+// 'database\\bank_spots.txt'
+// 'database\\bowcraft_shop_spots.txt'
+// 'database\\provisioner_shop_spots.txt'
+// 'database\\ressgate_spots.txt'
+// 'database\\tailor_shop_spots.txt'
+// 'database\\moongate_spots.txt'
+
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+
+
+
+
+while(true){
+	if(Player.Dead()){
+		//TextWindow.Open();
+		inicial_pos = [Player.X(),Player.Y(),Player.Z()]
+		c_pos = get_nearest_pos('database\\ressgate_spots.txt')
+		//TextWindow.Print('go ress');
+		improved_WalkTo(c_pos[0],c_pos[1],c_pos[2],0,0,0)
+		//TextWindow.Open();
+		//TextWindow.Print('RESS');
+		Orion.Wait(5*1000)
+		//TextWindow.Print('going back');
+		improved_WalkTo(inicial_pos[0],inicial_pos[1],inicial_pos[2],10,255,0)
+		//TextWindow.Print('BACK');
+	}
+	Orion.Wait(5*1000)
+}

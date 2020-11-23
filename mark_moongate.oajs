@@ -1,0 +1,14 @@
+//#include library.oajs
+
+//Orion.Info()
+//break
+
+moongate_type = '0x16B5'
+
+moongate_list = Orion.FindType(moongate_type,-1,'ground','', 10);
+
+moongate_obj = Orion.FindObject(moongate_list);
+c_point = [moongate_obj.X(),moongate_obj.Y(),moongate_obj.Z()]
+
+write_file("G:\\Games\\UO\\scripts\\moongate_spots.txt",c_point)
+Orion.Print('Marked MoonGate: ' + c_point)

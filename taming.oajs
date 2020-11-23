@@ -1,0 +1,263 @@
+//#include library.oajs
+
+//Orion.Info();
+//break
+
+
+animal_pig = '0x00CB'
+animal_chicken = '0x00D0' 
+animal_cat = '0x00C9'
+animal_sheep = '0x00CF'
+animal_guard_dog = '0x00E1'
+animal_cow = '0x00D8'
+animal_horse = '0x00C8'
+animal_starling = '0x0006'
+animal_goat = '0x00D1'
+animal_bull = '0x00E8'
+animal_rabbit = '0x00CD'
+animal_towhee = '0x0006'
+animal_golden_hawk = '0x0005'
+animal_hind = '0x00ED'
+
+selected_animals = [
+//	animal_pig,
+//	animal_chicken,
+//	animal_cat
+//	animal_sheep,
+//	animal_guard_dog
+//	animal_cow,
+//	animal_horse,
+//	animal_starling,
+//	animal_goat,
+//	animal_bull
+//	animal_rabbit
+	animal_hind,
+	'AAA'
+	]
+
+
+vendor_type = '0x0191|0x0190|0x83F8'
+
+gold_coins_type = '0x0EED'
+gold_coins_color = '0x0000'
+
+
+//backpack_type = '0x0E75'
+//obj_list = Orion.FindType(backpack_type,-1,'ground','', 100);
+//Orion.UseObject(obj_list[0]);
+//Orion.MoveItem(obj_list[0], 0, Player.Container());
+//back_pack = Orion.FindObject(obj_list[0]);
+//Orion.Print(obj_list[0].X(),obj_list[0].Y(),obj_list[0].Z());
+//break
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y()]);
+//break
+
+MAX_ANIMALS = 6
+
+HEAVY_LOAD = 80
+
+//BANK_POS = [1447,1667]
+//RESS_POS = [1352,1777]
+//ANIMAL_TRAIN_POS = [1296,1761]
+ANIMAL_TRAIN_POS = [1323,1809,0]
+
+
+skill_taming = 'Animal Taming'
+skill_ani_lore = 'Animal Lore'
+
+tame_sucssess_msg = "You successfully tame the"
+tame_fail_msg = "You must wait to perform another action.|You're too far away to continue taming.|The creature isn't in your line of sight."
+tame_cant_msg = "You have no chance of taming this creature!|You cannot tame this!|What you selected does not seem to exist.|That is not within your line of sight.|belongs to someone else!|And have made the creature unresponsive to taming.|has angered the beast!|You failed to tame the creature.|That creature is diseased!|I am dead and cannot do that."
+tame_tamed_msg = "That creature looks pretty tame already."
+//tame_wait_msg = 'You must wait to perform another action.'
+
+tame_result_mgs = tame_sucssess_msg+'|'+tame_fail_msg+'|'+tame_cant_msg+'|'+tame_tamed_msg
+
+
+
+//TextWindow.Open();
+//TextWindow.Print(Player.Name());
+//break
+
+//journal_msg = Orion.InJournal('diseased')
+//TextWindow.Open();
+//TextWindow.Print(journal_msg.Text());
+//break
+
+//animal_list = Orion.FindType(array_to_list(selected_animals),-1,'ground','', 200);
+//Orion.Print(animal_list[0]);
+//Orion.TargetObject(animal_list[0]);
+//Orion.Print(Orion.ClientLastTarget());
+//break
+
+
+function sell_animals(animal_trainer_pos){
+	for(tries=0;tries<5;tries++){
+		improved_WalkTo(animal_trainer_pos[0],animal_trainer_pos[1],animal_trainer_pos[2],1,0,0)
+		Orion.Wait(1000)
+	}
+
+	//Orion.Wait(10*1000)
+	animal_list = Orion.FindType(array_to_list(selected_animals),-1,'ground','', 20);
+	
+	
+	for(c_animal=0;c_animal<animal_list.length;c_animal++){
+		animal_obj = Orion.FindObject(animal_list[c_animal]);
+		Orion.Say('sell')
+		Orion.WaitForTarget(1000);
+		Orion.TargetObject(animal_list[c_animal]);
+		Orion.Wait(2000)
+		animal_count = 0
+	}
+}
+		
+animal_count = 0
+tamed_list = []
+function tame_prox(){
+	// SELECT NEAREST TARGET FROM TYPE -------------------------------------------------
+	animal_list = Orion.FindType(array_to_list(selected_animals),-1,'ground','', 200);
+	
+	animal_pos_list = []
+	animal_obj_list = []
+	for(c_animal=0;c_animal<animal_list.length;c_animal++){
+		animal_obj = Orion.FindObject(animal_list[c_animal]);
+		c_point = [animal_obj.X(),animal_obj.Y()]
+		if(!contain_points(animal_pos_list,c_point)){
+			add_item(animal_pos_list, c_point)
+			add_item(animal_obj_list,animal_obj)
+		}
+	}
+	// -----------------------------------------------------------------------------------------------
+	
+	
+	
+	// -----------------------------------------------------------------------------------------------
+	list_length = animal_pos_list.length
+	Orion.Print("Animals arround: " + list_length)
+	for(c_animal=0;c_animal<list_length;c_animal++){
+		player_point = [Player.X(),Player.Y()]
+		nearest_animal_index = get_nearest_index(player_point ,animal_pos_list)
+		
+		taming_target = animal_obj_list[nearest_animal_index]
+		if(tamed_list.toString().indexOf(animal_obj_list[nearest_animal_index].Serial())  != -1){
+			continue
+		}
+		
+		
+		improved_WalkTo(taming_target.X(), taming_target.Y(), taming_target.Z(), 5,0,0);
+
+//		Orion.Print(animal_obj_list[nearest_animal_index].Serial())
+//		Orion.Print(tamed_list.toString())
+		
+		Orion.ClearJournal();
+		Orion.CancelTarget()
+		Orion.UseSkill(skill_taming,taming_target.Serial())
+		//Orion.Say('all follow me') // FOLLOW
+		journal_obj = Orion.WaitJournal(tame_result_mgs,0,Orion.Now() + 30*1000)
+		//Orion.Say('all stop') // FOLLOW
+		//Orion.Say('all stay') // FOLLOW
+		
+		if(journal_obj == null)
+			continue
+		if(tame_sucssess_msg.indexOf(journal_obj.Text().replace(" "+taming_target.Name(),""))  != -1){
+			//Orion.Print('Tamed!')
+			//Orion.Say(taming_target.Name() + ' release') // RELEASE
+			Orion.Print(journal_obj.Text())
+			Orion.Say('all guard me') // GUARD
+			Orion.Say('all follow me') // FOLLOW
+			animal_pos_list[nearest_animal_index][0] = 0
+			animal_pos_list[nearest_animal_index][1] = 0
+			animal_count++
+			add_item(tamed_list,taming_target.Serial())
+			Orion.Print(animal_count)
+		}
+		
+		if(tame_fail_msg.indexOf(journal_obj.Text().replace(Player.Name()+" ",""))  != -1){
+			c_animal--
+			//Orion.Print('try again')
+			Orion.Print(journal_obj.Text())
+			Orion.Wait(2000)
+			continue
+		}
+		
+		if(tame_cant_msg.indexOf(journal_obj.Text().replace(taming_target.Name()+" ",""))  != -1){
+			//Orion.Print('give up')
+			Orion.Print(journal_obj.Text())
+			animal_pos_list[nearest_animal_index][0] = 0
+			animal_pos_list[nearest_animal_index][1] = 0
+		}
+		
+		if(tame_tamed_msg.indexOf(journal_obj.Text())  != -1){
+			Orion.Print(journal_obj.Text())
+			//Orion.Print(Orion.Say(taming_target.Name() + ' release')) // RELEASE
+			animal_pos_list[nearest_animal_index][0] = 0
+			animal_pos_list[nearest_animal_index][1] = 0
+			animal_count++
+			Orion.Say('all guard me') // GUARD
+			Orion.Say('all follow me') // FOLLOW
+			
+			add_item(tamed_list,taming_target.Serial())
+			Orion.Print(animal_count)
+		}	
+		// -----------------------------------------------------------------------------------------------
+		if(animal_count >= MAX_ANIMALS){
+			player_point = [Player.X(),Player.Y()]
+			sell_animals(ANIMAL_TRAIN_POS)
+			c_animal = 0
+			tamed_list = []
+			Orion.WalkTo(player_point[0], player_point[1],0 , 1,255,1);
+			break
+		}
+	}
+
+}
+//tame_prox()
+//sell_animals(ANIMAL_TRAIN_POS)
+//break
+
+// MAIN ---------------------------------------------------------------------
+while(true){
+	//goto_bank()
+
+	ANIMAL_TRAIN_POS
+
+	fileObject = Orion.NewFile();
+	fileObject.Open('database\\taming_spots.txt');
+	while(file_line = fileObject.ReadLine()){
+	
+		// IF DEAD GO RESS
+		if(Player.Dead()){
+			c_pos = get_nearest_pos('database\\ressgate_spots.txt')
+			improved_WalkTo(c_pos[0],c_pos[1],c_pos[2],0,0,1)
+		}
+	
+		c_position = file_line.split(',')
+		//Orion.Print([c_position[0],c_position[1],c_position[2]])
+		improved_WalkTo(c_position[0],c_position[1],c_position[2],0,0,0)
+		Orion.Wait(1000)
+		
+		tame_prox()
+	
+	}
+	fileObject.Close();
+	
+	if(animal_count > 0){
+		sell_animals(ANIMAL_TRAIN_POS)
+	
+	}
+	
+
+}
+// ---------------------------------------------------------------------------------
+
+//Orion.WalkTo(4302,2823,5,0,255,1)
+
+
+
+
+// -----------------------------------------------------------------------------------------------
+break
+//obj_list = Orion.FindType('graphic');
+//Orion.Print(animal_obj_list[nearest_animal_index])
+//Orion.UseSkill('Animal Lore')

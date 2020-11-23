@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data version="0" show_shopping_progress_bar="false" max_shop_items="0" max_sell_price="0" shop_delay="450" shop_timeout="30" buy_command="buy" sell_command="sell">
+    <shoplist name="thread">
+        <shopitem graphic="0x0FA0" color="0x0000" name="spool of thread" count="10" price="10" comment=""/>
+    </shoplist>
+    <shoplist name="bandages">
+        <shopitem graphic="0x0E21" color="0x0000" name="clean bandage" count="300" price="3" comment=""/>
+    </shoplist>
+    <shoplist name="arrows_bolts">
+        <shopitem graphic="0x0F3F" color="0x0000" name="arrow" count="150" price="6" comment=""/>
+        <shopitem graphic="0x1BFB" color="0x0000" name="bolt" count="150" price="7" comment=""/>
+    </shoplist>
+    <shoplist name="fish">
+        <shopitem graphic="0x097A" color="0x0000" name="raw fish steak" count="999" price="1" comment=""/>
+    </shoplist>
+</data>

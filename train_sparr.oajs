@@ -1,0 +1,155 @@
+//#include library.oajs
+
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+// 'database\\bank_spots.txt'
+// 'database\\bowcraft_shop_spots.txt'
+// 'database\\provisioner_shop_spots.txt'
+// 'database\\ressgate_spots.txt'
+// 'database\\tailor_shop_spots.txt'
+// 'database\\moongate_spots.txt'
+
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+
+HEAVY_LOAD = 80
+
+
+//c_pos = get_nearest_pos('database\\moongate_spots.txt')
+//Orion.WalkTo(c_pos[0],c_pos[1],c_pos[2],0,255,1,2)
+//choose_moongate_destination('Newbie Land')
+//Orion.Wait(2*1000)
+
+//c_pos = get_nearest_pos('database\\bank_spots.txt')
+//Orion.WalkTo(c_pos[0],c_pos[1],c_pos[2],0,255,1,2)
+//break
+
+//Orion.Info()
+//break
+
+// -----------------------------------------------------------------------------------------------------
+function stepout(target_serial){
+	human_obj = Orion.FindObject(target_serial);
+	if(human_obj){
+		
+		if(human_obj.Distance() < 2){
+			target_pos = [human_obj.X(),human_obj.Y()]
+			player_pos = [Player.X(),Player.Y()]
+			
+			vector = [(target_pos[0]-player_pos[0]),(target_pos[1]-player_pos[1])]
+			
+			if(vector[0])
+				vector[0] = vector[0]/(Math.abs(vector[0]))
+			if(vector[1])
+				vector[1] = vector[1]/(Math.abs(vector[1]))
+			
+			improved_WalkTo(Player.X()-vector[0],Player.Y()-vector[1],Player.Z(),0,255,0)
+		}
+			
+	}
+}
+// -----------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------
+function stepin(target_serial){
+	human_obj = Orion.FindObject(target_serial);
+	if(human_obj){
+		
+		if(human_obj.Distance() > 1){
+			improved_WalkTo(human_obj.X(),human_obj.Y(),human_obj.Z(),1,0,0)
+		}
+			
+	}
+}
+// -----------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------
+function get_target_health(target_serial){
+	//target_serial = Orion.ClientLastAttack();
+	target_obj = Orion.FindObject(target_serial);
+	if(!target_obj)
+		return 0
+	target_health = Math.floor( (target_obj.Hits()/target_obj.MaxHits())*100) 
+	return target_health
+}
+// ------------------------------------------------------------
+
+// ------------------------------------------------------------
+function get_own_health(){
+	target_health = Math.floor( (Player.Hits()/Player.MaxHits())*100) 
+	return target_health
+}
+// ------------------------------------------------------------
+
+inicial_pos = [Player.X(),Player.Y(),Player.Z()]
+
+while(true){
+	target_serial = Orion.ClientLastAttack()
+	//TextWindow.Open();
+	//TextWindow.Print(target_serial);
+	Orion.Attack(target_serial);
+	//Orion.UseObject(target_serial);
+	//TextWindow.Open();
+	//TextWindow.Print('get_own_health: '+get_own_health());
+	//TextWindow.Print('get_target_health: '+get_target_health(target_serial));
+	if(get_own_health()<50 || get_target_health(target_serial)<50){
+		//TextWindow.Print('stepout');
+		stepout(target_serial)
+	}else{
+		//TextWindow.Print('stepin');
+		improved_WalkTo(inicial_pos[0],inicial_pos[1],inicial_pos[2],1,0,0)
+		//stepin(target_serial)
+	}
+	
+	if(get_target_health(target_serial) == 0){
+		improved_WalkTo(inicial_pos[0],inicial_pos[1],inicial_pos[2],1,0,0)
+	}
+
+	Orion.Wait(1000)
+}
+
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+//BUY_LIST_NAME = 'bandages'
+//SHOP_DATABASE = 'database\\tailor_shop_spots.txt'
+//c_pos = get_nearest_pos('database\\bank_spots.txt')
+//c_pos = get_nearest_pos('database\\provisioner_shop_spots.txt')
+//c_pos = get_nearest_pos('database\\bowcraft_shop_spots.txt')
+
+
+//shop_deposit('arrows_bolts','database\\bowcraft_shop_spots.txt')
+//shop_deposit('bandages','database\\provisioner_shop_spots.txt')
+
+//shop_deposit('thread','database\\tailor_shop_spots.txt')
+
+//shop_deposit('thread','database\\tailor_shop_spots.txt')
+//break
+
+//goto_town('Newbie Land')
+//break
+
+//goto_town('Minoc')
+//goto_bank()
+

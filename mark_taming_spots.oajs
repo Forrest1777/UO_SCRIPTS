@@ -1,0 +1,4 @@
+//#include library.oajs
+
+write_file("database\\taming_spots.txt",[Player.X(),Player.Y(),Player.Z()])
+Orion.Print('Marked bowcraft shop: ' + [Player.X(),Player.Y(),Player.Z()])

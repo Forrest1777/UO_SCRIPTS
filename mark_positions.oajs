@@ -1,0 +1,4 @@
+//#include library.oajs
+
+write_file("database\\test_spots.txt",[Player.X(),Player.Y(),Player.Z()])
+Orion.Print('Marked Position: ' + [Player.X(),Player.Y(),Player.Z()])

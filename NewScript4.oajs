@@ -1,0 +1,9 @@
+//#include library.oajs
+
+animal_pig = '0x00CB'
+
+obj_list = Orion.FindType(animal_pig,-1,'ground','', 10);
+
+//obj_list = Orion.FindType('graphic');
+Orion.Print(obj_list.length)
+//Orion.UseSkill('Animal Lore')

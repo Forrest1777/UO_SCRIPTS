@@ -1,0 +1,14 @@
+//#include library.oajs
+
+//Orion.Info()
+//break
+
+ressgate_type = '0x1FE7'
+
+ressgate_list = Orion.FindType(ressgate_type,-1,'ground','', 10);
+
+ressgate_obj = Orion.FindObject(ressgate_list);
+c_point = [ressgate_obj.X(),ressgate_obj.Y(),ressgate_obj.Z()]
+
+write_file("databasee\\ressgate_spots.txt",c_point)
+Orion.Print('Marked RessGate: ' + c_point)

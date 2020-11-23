@@ -1,0 +1,956 @@
+//Orion.ClearJournal('*');
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+
+//bank_container = '0x40234A86'
+bank_container =  Player.BankSerial()
+
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+deadwood_type = '0x0F90'
+
+food_types = '0x097E|0x097B'
+
+//JOURNAL
+journal_doing = "I am already doing something else."
+journal_cant_wood = "You can't get any wood from that."
+journal_cant_mine = "You can't mine or dig anything there."
+journal_start_dig = "You start digging..."
+journal_start_mine = "You start mining..."
+journal_start_wood = "You start lumberjacking..."
+journal_no_metal = "There is no metal here to mine."
+journal_no_sand = "There's no sand left there."
+journal_no_wood = "There's no wood here to chop..."
+journal_stop_mine = "You stop mining."
+journal_stop_wood = "You stop lumberjacking."
+
+
+// SKILLS
+skill_armslore = '4'
+
+// PARAMETERS
+//RADIUS = 50
+
+HEAVY_LOAD = 80
+
+
+vendor_type = '0x0191|0x0190|0x83F8'
+
+gold_coins_type = '0x0EED'
+gold_coins_color = '0x0000'
+
+
+
+// -------------------------------------------------------------------------------------------------
+function reach_nearest_serial(serial_list){
+
+	iteration_list = []
+	for(c_pos_i=0;c_pos_i<serial_list.length;c_pos_i++){
+		serial_obj = Orion.FindObject(serial_list[c_pos_i]);
+		c_point = [serial_obj.X(),serial_obj.Y(),serial_obj.Z()]
+		if(!contain_points(iteration_list,c_point))
+			add_item(iteration_list, c_point)
+	}
+	
+	player_point = [Player.X(),Player.Y()]
+	nearest_index = get_nearest_index(player_point ,iteration_list)
+	nearest_pos = iteration_list[nearest_index]
+	improved_WalkTo(nearest_pos[0],nearest_pos[1],nearest_pos[2],1,0)
+//	improved_WalkTo(iteration_list[nearest_index][0],iteration_list[nearest_index][1],iteration_list[nearest_index][2],1,0)
+	
+}
+// -------------------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------------------
+function improved_WalkTo(x, y, z, distanceXY, distanceZ){
+	Orion.CancelTarget()
+	if(get_weight() > HEAVY_LOAD)
+		moving_speed = 0
+	else
+		moving_speed = 1
+
+	return Orion.WalkTo(x, y, z, distanceXY, distanceZ, moving_speed,2)
+}
+// ----------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+function deposite_type(obj_type){
+	obj_list = Orion.FindType(obj_type)
+	
+//	bank_container =  Player.BankSerial()
+	if(obj_list.length == 0)
+		return false
+	for(obj_i=0;obj_i<obj_list.length;obj_i++){
+		Orion.MoveItem(obj_list[obj_i], 0, Player.BankSerial());
+		Orion.Wait(500);
+	}
+	return true
+}
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+function withdraw_type(obj_type){
+	obj_list = Orion.FindType(obj_type,'any',Player.BankSerial())
+	
+	if(obj_list.length > 0){
+		Orion.MoveItem(obj_list[0],1);
+		Orion.Wait(500);
+		return true
+	}
+	return false
+}
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+function verify_food(){
+	found = Orion.FindType(food_types)[0]
+	
+	if(found != null){
+		return true
+	}
+	return false
+}
+// --------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+function reach_any_serial(serial_list){
+	if(get_weight() > HEAVY_LOAD)
+		moving_speed = 0
+	else
+		moving_speed = 1
+	for(serial_i=0;serial_i<serial_list.length;serial_i++){
+		serial_obj = Orion.FindObject(serial_list[serial_i]);
+		if(serial_obj.Properties().indexOf('Invulnerable') != -1){
+			if(improved_WalkTo(serial_obj.X(),serial_obj.Y(),serial_obj.Z(),1,0,moving_speed))
+				break
+		}
+	}
+}
+// -------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+function goto_bank(){
+	c_pos = get_nearest_pos('database\\bank_spots.txt')
+	reach_pos([c_pos[0],c_pos[1],c_pos[2]])
+	vendor_list = Orion.FindType(vendor_type,-1,'ground','', 10);
+	
+	VALID_VENDORS = 0
+	for(vendor_index=0;vendor_index<vendor_list.length;vendor_index++){
+		vendor_obj = Orion.FindObject(vendor_list[vendor_index]);
+		if(vendor_obj.Properties().indexOf('Invulnerable') == -1){
+			remove_item(vendor_list,vendor_index)
+		}
+	}
+	
+	reach_nearest_serial(vendor_list)
+	Orion.Say('bank');
+	Orion.Wait(2000);
+}
+// -------------------------------------------------------------------------------------------------
+
+
+// -------------------------------------------------------------------------------------------------
+function goto_town(TOWN_NAME){
+	c_pos = get_nearest_pos('database\\moongate_spots.txt')
+	improved_WalkTo(c_pos[0],c_pos[1],c_pos[2],0,255,1,2)
+	choose_moongate_destination(TOWN_NAME)
+	Orion.Wait(2*1000)
+}
+// -------------------------------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------------------------------------------
+function reach_pos(pos_param){
+		
+	if(improved_WalkTo(pos_param[0],		pos_param[1],		pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(parseInt(pos_param[0])+1,	pos_param[1]	,		pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(pos_param[0],		parseInt(pos_param[1])+1,	pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(parseInt(pos_param[0])+1,	parseInt(pos_param[1])+1,	pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(pos_param[0]-1,	pos_param[1],		pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(pos_param[0],		pos_param[1]-1,	pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(pos_param[0]-1,	pos_param[1]-1,	pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(pos_param[0]-1,	parseInt(pos_param[1])+1,	pos_param[2],0,0))
+		return true
+	if(improved_WalkTo(parseInt(pos_param[0])+1,	pos_param[1]-1,	pos_param[2],0,0))
+		return true
+	return false
+}
+// -----------------------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------------------
+function shop_deposit(BUY_LIST_NAME,SHOP_DATABASE){
+	// REACH SHOP
+	c_pos = get_nearest_pos(SHOP_DATABASE)
+	if(!reach_pos([c_pos[0],c_pos[1],c_pos[2]])){
+		return
+	}
+	
+	// COUNT VENDORS
+	vendor_list = Orion.FindType(vendor_type,-1,'ground','', 20);
+	vendor_qtd = vendor_list.length
+	
+	// DECIDE WITHDRAW
+	shop_list = Orion.GetShopList(BUY_LIST_NAME);
+	shop_items = shop_list.Items();
+	
+	// ESTIMATE WITHDRAW
+	TOTAL_WITHDRAW=0
+	for(item_index=0;item_index<shop_items.length;item_index++){
+		TOTAL_WITHDRAW += shop_items[item_index].Count() * shop_items[item_index].Price()
+	}
+	
+	VALID_VENDORS = 0
+	for(vendor_index=0;vendor_index<vendor_list.length;vendor_index++){
+		vendor_obj = Orion.FindObject(vendor_list[vendor_index]);
+		if(vendor_obj.Properties().indexOf('Invulnerable') != -1){
+			VALID_VENDORS++
+		}
+	}
+	
+	TOTAL_WITHDRAW *= VALID_VENDORS
+	
+	// WITHDRAW FROM BANK
+	goto_bank()
+	
+	gold_coin_list = Orion.FindType(gold_coins_type, gold_coins_color, Player.BankSerial());
+	Orion.DragItem(gold_coin_list[0], TOTAL_WITHDRAW);
+	Orion.DropDraggedItem();
+	
+	// BACK TO SHOP
+	c_pos = get_nearest_pos(SHOP_DATABASE)
+	reach_pos([c_pos[0],c_pos[1],c_pos[2]])
+	
+	// BUY FROM EACH VENDOR
+	vendor_list = Orion.FindType(vendor_type,-1,'ground','', 20);
+	for(vendor_index=0;vendor_index<vendor_list.length;vendor_index++){
+		vendor_obj = Orion.FindObject(vendor_list[vendor_index]);
+		
+		if(vendor_obj != null){
+			if(vendor_obj.Properties().indexOf('Invulnerable') != -1){
+				improved_WalkTo(vendor_obj.X(),vendor_obj.Y(),vendor_obj.Z(),1,255,1,2)
+				improved_WalkTo(vendor_obj.X(),vendor_obj.Y(),vendor_obj.Z(),1,255,1,2)
+				Orion.Buy(BUY_LIST_NAME);
+				Orion.Wait(2000);
+				
+			}
+		}
+		
+	}
+	
+	// BACK TO BANK
+	goto_bank()
+	
+	// DEPOSIT MONEY AND PRODUCT
+	c_obj = Orion.FindType(gold_coins_type, gold_coins_color)
+	for(obj_i=0;obj_i<c_obj.length;obj_i++){
+		Orion.MoveItem(c_obj[obj_i], 0, Player.BankSerial());
+		Orion.Wait(500);
+	}
+	
+	for(item_index=0;item_index<shop_items.length;item_index++){
+	
+		TOTAL_WITHDRAW += shop_items[item_index].Graphic() * shop_items[item_index].Color()
+	
+		c_obj = Orion.FindType(shop_items[item_index].Graphic(), shop_items[item_index].Color())
+		for(obj_i=0;obj_i<c_obj.length;obj_i++){
+			Orion.MoveItem(c_obj[obj_i], 0, Player.BankSerial());
+			Orion.Wait(500);
+		}
+	}
+}
+// -----------------------------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------
+function get_nearest_pos(pos_file){
+
+	fileObject = Orion.NewFile();
+	fileObject.Open(pos_file);
+	pos_list = []
+	while(file_line = fileObject.ReadLine()){
+		c_point = file_line.split(',')
+		
+		// removendo duplicatas
+		if(!contain_points(pos_list,c_point))
+				add_item(pos_list, c_point)
+	}
+	fileObject.Close();
+	
+	player_point = [Player.X(),Player.Y()]
+	nearest_index = get_nearest_index(player_point ,pos_list)
+	
+	return pos_list[nearest_index]
+	
+}
+// --------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------
+// CITIES
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+function choose_moongate_destination(DESTINATION){
+	if(Orion.WaitForGump(3*1000)){
+		gump_obj = Orion.GetLastGump();
+	}else{
+		break
+	}
+	
+	gump_btn_list = gump_obj.ButtonList()
+	gump_cmd_list = gump_obj.CommandList();
+	gump_txt_list = gump_obj.TextList()
+	
+	
+	OK_BTN_ATTR = gump_btn_list[0].trim().split(' ')
+	CANCEL_BTN_ATTR = gump_btn_list[1].trim().split(' ')
+	
+	OK_BTN_ID = OK_BTN_ATTR[OK_BTN_ATTR.length-1]
+	CANCEL_BTN_ID = CANCEL_BTN_ATTR[CANCEL_BTN_ATTR.length-1]
+	
+	text_list = []
+	for(gump_i=1;gump_i<gump_txt_list.length;gump_i++){
+		add_item(text_list,gump_txt_list[gump_i])
+	}
+	
+	radio_list = []
+	for(gump_i=0;gump_i<gump_cmd_list.length;gump_i++){
+		if(gump_cmd_list[gump_i].indexOf('radio') != -1){
+			c_attrs = gump_cmd_list[gump_i].trim().split(' ')
+			add_item(radio_list, [text_list[radio_list.length],c_attrs[c_attrs.length-1]])
+		}
+	}
+	
+	DESTINATION_CONF = ''
+	
+	for(radio_i=0;radio_i<radio_list.length;radio_i++){
+		if(radio_list[radio_i][0] == DESTINATION)
+			DESTINATION_CONF = radio_list[radio_i]
+	}
+	
+	gump_hook = Orion.CreateGumpHook(OK_BTN_ID);
+	if(DESTINATION_CONF[1] !=2049 )
+		gump_hook.AddCheck(2049, false);
+	gump_hook.AddCheck(DESTINATION_CONF[1], true);
+	gump_obj.Select(gump_hook);
+}
+// ------------------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------------------
+function array_to_list(array_param){
+	result_str = ''
+	for(arrai_i=0;arrai_i<selected_animals.length;arrai_i++){
+		result_str = result_str + selected_animals[arrai_i] + '|'
+	}
+	return result_str.substring(0,result_str.length-1);
+}
+// ------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function get_weight(){
+	return Math.floor(Player.Weight() / Player.MaxWeight() * 100)
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function get_distance( x1, y1, x2, y2 ) {
+	xs = x2 - x1,
+	ys = y2 - y1;		
+	xs *= xs;
+	ys *= ys;
+	
+	return Math.sqrt( xs + ys )
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function remove_item(array_list,index){
+	array_list.splice(index, 1)
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function add_item(array_list,item){
+	array_list.push(item)
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function compare_points(point_1,point_2){
+	if(point_1[0] == point_2[0])
+		if(point_1[1] == point_2[1])
+			return true
+	return false
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function contain_points(points_list,c_point){
+	for(c_cont_p=0;c_cont_p<points_list.length;c_cont_p++){
+		if(compare_points(c_point,points_list[c_cont_p]))
+			return true
+	}
+	return false
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function get_nearest_index(c_point, points_list){
+	nearest_distance = 999999
+	nearest_index = 0
+	
+	for(c_nearest_i=0;c_nearest_i<points_list.length;c_nearest_i++){
+		c_distance = get_distance( c_point[0], c_point[1],points_list[c_nearest_i][0],points_list[c_nearest_i][1])
+		//Orion.Print(c_distance)
+		if(c_distance < nearest_distance){
+			nearest_distance = c_distance
+			nearest_index = c_nearest_i
+		}
+	}
+	return nearest_index
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function remove_item(array_list,index){
+	array_list.splice(index, 1)
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function equip_tool(tool_type){
+
+	if(verify_tool(tool_type)){
+		equiped_object = Orion.ObjAtLayer(1)
+	
+		if(equiped_object != null){
+		
+			if(equiped_object.Graphic() == tool_type){
+				return equiped_object.Serial()
+			}else{
+				Orion.Unequip(1);
+				Orion.Wait(1000);
+			}
+			
+		}else{
+			c_tool = Orion.FindType(tool_type)[0]
+			if(c_tool != null){
+				Orion.Equip(c_tool);
+				Orion.Wait(1000);
+			}
+		}
+	}else{
+		return null
+	}
+	
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function gatther2(tool_type,x,y){
+
+	FIRST_STAGE = journal_doing+'|'+journal_cant_mine+'|'+journal_cant_wood+'|'+journal_start_dig+'|'+journal_start_mine+'|'+journal_start_wood
+	SECOND_STAGE = journal_no_metal+'|'+journal_no_sand+'|'+journal_no_wood+'|'+journal_stop_mine+'|'+journal_stop_wood
+	
+	journal_not_mineable_MSG = journal_cant_mine+'|'+journal_cant_wood
+	journal_mineable_MSG = journal_start_dig+'|'+journal_start_mine+'|'+journal_start_wood
+	journal_no_resoucer_MSG = journal_no_metal+'|'+journal_no_sand+'|'+journal_no_wood
+	journal_stop_mining_MSG = journal_stop_mine+'|'+journal_stop_wood
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+	
+		gather_tool = equip_tool(tool_type);
+		if(gather_tool == null){
+			return;
+		}
+			
+		Orion.UseObject(gather_tool);
+		if (Orion.WaitForTarget(3000))
+			Orion.TargetTileRelative('any', x, y, 0);
+		
+		journal_obj = Orion.WaitJournal(FIRST_STAGE,0,Orion.Now() + 300*1000)
+		
+		if(journal_doing.indexOf(journal_obj.Text())  != -1){
+				//Orion.Print('journal_doing')
+			continue;
+		}
+		
+		if(journal_not_mineable_MSG.indexOf(journal_obj.Text())  != -1){
+				//Orion.Print('journal_not_mineable')
+			return;
+		}
+		
+		if(journal_mineable_MSG.indexOf(journal_obj.Text())  != -1){
+				//Orion.Print('journal_mineable')
+				//break;
+		}
+		// -------------------------
+
+		// WAIT END --------------
+		journal_obj = Orion.WaitJournal(SECOND_STAGE,0,Orion.Now() + 300*1000)
+		
+		if(journal_no_resoucer_MSG.indexOf(journal_obj.Text())  != -1){
+			//Orion.Print('journal_no_sand')
+			return;
+		}
+		
+		if(journal_stop_mining_MSG.indexOf(journal_obj.Text())  != -1){
+			//Orion.Print('journal_stop_mining')
+			//break;
+		}
+			
+		// -------------------------
+		
+	}
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function gather(tool_type,x,y,z){
+
+	switch(tool_type){
+		case hatchet_type:
+			journal_not_mineable_MSG = 'any wood from that'
+			journal_mineable_MSG = 'start lumberjacking'
+			journal_no_resoucer_MSG = 'no wood here to chop...'
+			journal_stop_mining_MSG = 'stop lumberjacking'
+//			Orion.Print('WOOD')
+			break;
+		case pickaxe_type:
+			journal_not_mineable_MSG = 'mine or dig anything'
+			journal_mineable_MSG = 'start digging...|start mining...'
+			journal_no_resoucer_MSG = 'no metal here to mine|no sand left'
+			journal_stop_mining_MSG = 'stop mining'
+//			Orion.Print('ORE')
+			break;
+	}
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+//			Orion.Print('TRY START')
+			gather_tool = equip_tool(tool_type);
+			if(gather_tool == null){
+				return;
+			}
+				
+			Orion.UseObject(gather_tool);
+			if (Orion.WaitForTarget(1000))
+				Orion.TargetTile('any', x, y, z);
+
+			Orion.Wait(1000);
+			
+			journal_not_mineable = Orion.InJournal(journal_not_mineable_MSG)
+			journal_mineable = Orion.InJournal(journal_mineable_MSG)
+			
+			if(journal_not_mineable !== null){
+//				Orion.Print('journal_not_mineable')
+				return;
+			}
+			
+			if(journal_mineable !== null){
+//				Orion.Print('journal_mineable')
+				break;
+			}
+			
+		} // -------------------------
+		
+		// WAIT END --------------
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+			Orion.Wait(1000);
+//			Orion.Print('WAIT END')
+			journal_no_resoucer = Orion.InJournal(journal_no_resoucer_MSG)
+			journal_stop_mining = Orion.InJournal(journal_stop_mining_MSG)
+			
+			if(journal_no_resoucer !== null){
+//				Orion.Print('journal_no_sand')
+				return;
+			}
+			
+			if(journal_stop_mining !== null){
+//				Orion.Print('journal_stop_mining')
+				break;
+			}
+			
+		} // -------------------------
+		
+		Orion.Wait(1000);
+	}
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function gatther(tool_type,x,y){
+
+	switch(tool_type){
+		case hatchet_type:
+			journal_not_mineable_MSG = 'any wood from that|too far away'
+			journal_mineable_MSG = 'start lumberjacking'
+			journal_no_resoucer_MSG = 'no wood here to chop...'
+			journal_stop_mining_MSG = 'stop lumberjacking'
+//			Orion.Print('WOOD')
+			break;
+		case pickaxe_type:
+			journal_not_mineable_MSG = 'mine or dig anything|too far away'
+			journal_mineable_MSG = 'start digging...|start mining...'
+			journal_no_resoucer_MSG = 'no metal here to mine|no sand left'
+			journal_stop_mining_MSG = 'stop mining'
+//			Orion.Print('ORE')
+			break;
+	}
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+//			Orion.Print('TRY START')
+			gather_tool = equip_tool(tool_type);
+			if(gather_tool == null){
+				return;
+			}
+				
+			Orion.UseObject(gather_tool);
+			if (Orion.WaitForTarget(1000))
+				Orion.TargetTileRelative('any', x, y, 0);
+
+			Orion.Wait(1000);
+			
+			journal_not_mineable = Orion.InJournal(journal_not_mineable_MSG)
+			journal_mineable = Orion.InJournal(journal_mineable_MSG)
+			
+			if(journal_not_mineable !== null){
+//				Orion.Print('journal_not_mineable')
+				return;
+			}
+			
+			if(journal_mineable !== null){
+//				Orion.Print('journal_mineable')
+				break;
+			}
+			
+		} // -------------------------
+		
+		// WAIT END --------------
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+			Orion.Wait(1000);
+//			Orion.Print('WAIT END')
+			journal_no_resoucer = Orion.InJournal(journal_no_resoucer_MSG)
+			journal_stop_mining = Orion.InJournal(journal_stop_mining_MSG)
+			
+			if(journal_no_resoucer !== null){
+//				Orion.Print('journal_no_sand')
+				return;
+			}
+			
+			if(journal_stop_mining !== null){
+//				Orion.Print('journal_stop_mining')
+				break;
+			}
+			
+		} // -------------------------
+		
+		Orion.Wait(1000);
+	}
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function verify_tool(tool_type){
+
+	equiped_object = Orion.ObjAtLayer(1)
+	
+	if(equiped_object != null){
+		if(equiped_object.Graphic() == tool_type){
+			return true
+		}
+	}
+	
+	found = Orion.FindType(tool_type)[0]
+	
+	if(found != null){
+		return true
+	}
+	
+	return false
+
+}
+// ------------------------------------------------------------------
+
+
+
+
+
+
+// ------------------------------------------------------------------
+function woodcut(x,y){
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+//			Orion.Print('TRY START')
+			c_hatchet = re_equip_hatchet();
+			if(c_hatchet == null){
+				return;
+			}
+				
+			Orion.UseObject(c_hatchet);
+			if (Orion.WaitForTarget(1000))
+				Orion.TargetTileRelative('any', x, y, 0);
+
+			Orion.Wait(1000);			
+			journal_not_mineable = Orion.InJournal('any wood from that')
+			journal_mineable = Orion.InJournal('start lumberjacking')
+			
+			if(journal_not_mineable !== null){
+				Orion.Print('journal_not_mineable')
+				return;
+			}
+			
+			if(journal_mineable !== null){
+				Orion.Print('journal_mineable')
+				break;
+			}
+			
+		} // -------------------------
+		
+		// WAIT END --------------
+		for(L_WAIT_I=0;L_WAIT_I<60;L_WAIT_I++){ // espera 1min
+			Orion.Wait(1000);
+//			Orion.Print('WAIT END')
+			journal_no_sand = Orion.InJournal('no wood here to chop...')
+			journal_stop_mining = Orion.InJournal('stop lumberjacking')
+
+			if(journal_no_sand !== null){
+				Orion.Print('journal_no_sand')
+				return;
+			}
+			
+			if(journal_stop_mining !== null){
+				Orion.Print('journal_stop_mining')
+				break;
+			}
+			
+		} // -------------------------
+		
+		Orion.Wait(1000);
+	}
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function mine(pickaxe,x,y){
+
+	while(true){
+		
+		// TRY START -------------
+		Orion.ClearJournal();
+		for(i=0;i<60;i++){ // espera 1min
+//			Orion.Print('TRY START')
+			c_pickaxe = re_equip_pickaxe();
+			if(c_pickaxe == null){
+				return;
+			}
+				
+			Orion.UseObject(c_pickaxe);
+			if (Orion.WaitForTarget(1000))
+				Orion.TargetTileRelative('any', x, y, 0);
+
+			Orion.Wait(1000);			
+			journal_not_mineable = Orion.InJournal('mine or dig anything')
+			journal_mineable = Orion.InJournal('start digging...')
+			
+			if(journal_not_mineable !== null)
+				return;
+			
+			if(journal_mineable !== null)
+				break;
+			
+		} // -------------------------
+		
+		// WAIT END --------------
+		for(i=0;i<60;i++){ // espera 1min
+			Orion.Wait(1000);
+//			Orion.Print('WAIT END')
+			journal_no_sand = Orion.InJournal('no sand left')
+			journal_stop_mining = Orion.InJournal('stop mining')
+
+			if(journal_no_sand !== null)
+				return;
+			
+			if(journal_stop_mining !== null)
+				break;
+			
+		} // -------------------------
+		
+		Orion.Wait(1000);
+	}
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function re_equip_pickaxe(){
+	Orion.Unequip(1);
+	c_pickaxe = Orion.FindType(pickaxe_type)[0]
+	if(c_pickaxe != null)
+		Orion.Equip(c_pickaxe);
+	return c_pickaxe
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function re_equip_hatchet(){
+	Orion.Unequip(1);
+	c_hatchet = Orion.FindType(hatchet_type)[0]
+	if(c_hatchet != null)
+		Orion.Equip(c_hatchet);
+	return c_hatchet
+}
+// ------------------------------------------------------------------
+
+
+
+// ------------------------------------------------------------------
+function use_skill(c_skill,c_target){
+	Orion.Wait(500);
+	Orion.UseSkill(c_skill);
+	if (Orion.WaitForTarget(1000))
+		Orion.TargetObject(c_target);
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function train_arms_lore(){
+	found = Orion.FindType(pickaxe_type+'|'+pickaxe_type)[0]
+	if(found != null){
+		use_skill(skill_armslore,found)
+	}else{
+		equiped_object = Orion.ObjAtLayer(1)
+		if(equiped_object != null)
+			use_skill(skill_armslore,equiped_object.Serial())
+	}
+	
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function write_file(c_file,c_message){
+	fileObject = Orion.NewFile();
+	fileObject.Append(c_file);
+	fileObject.WriteLine(c_message);
+	fileObject.Close();
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function verify_hatchet(){
+
+	Orion.ClearJournal();
+	equiped_object = Orion.ObjAtLayer(1)
+	
+	if(equiped_object != null){
+		if(equiped_object.Graphic() == hatchet_type){
+			return true
+		}
+	}
+	
+	found = Orion.FindType(hatchet_type)[0]
+	
+	if(found != null){
+		return true
+	}
+	
+	return false
+
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function verify_pickaxe(){
+
+	Orion.ClearJournal();
+	// WAIT END --------------
+	for(i=0;i<60;i++){ // espera 1min
+//		Orion.Print('try unequip')
+		Orion.Wait(1000);
+		
+		Orion.Unequip(1);
+		
+		journal_being_used = Orion.InJournal('already being used')
+		if(journal_being_used == null)
+			break;
+		
+	} // -------------------------
+	
+	found = Orion.FindType(pickaxe_type)[0]
+	
+	if(found == null){
+		return false
+	}
+	
+	return true
+
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function go_banking(obj_type){
+
+	improved_WalkTo(4230,2843,5,0,255,0)
+
+	improved_WalkTo(4226,2837,5,0,255,0)
+	improved_WalkTo(4223,2833,5,0,255,0)
+	
+	improved_WalkTo(4227,2830,5,0,255,0)
+	improved_WalkTo(4231,2830,5,0,255,0)
+	improved_WalkTo(4235,2830,5,0,255,0)
+	
+	Orion.Say('bank');
+	Orion.Wait(2000);
+	
+	c_obj = Orion.FindType(obj_type)
+	
+	bank_container =  Player.BankSerial()
+	for(obj_i=0;obj_i<c_obj.length;obj_i++){
+		Orion.MoveItem(c_obj[obj_i], 0, bank_container);
+		Orion.Wait(500);
+	}
+}
+// ------------------------------------------------------------------
+

@@ -1,0 +1,203 @@
+//#include library.oajs
+
+
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+deadwood_type = '0x0F90'
+
+food_types = '0x097E|0x097B'
+
+//JOURNAL
+journal_doing = "I am already doing something else."
+journal_cant_wood = "You can't get any wood from that."
+journal_cant_mine = "You can't mine or dig anything there."
+journal_start_dig = "You start digging..."
+journal_start_mine = "You start mining..."
+journal_start_wood = "You start lumberjacking..."
+journal_no_metal = "There is no metal here to mine."
+journal_no_sand = "There's no sand left there."
+journal_no_wood = "There's no wood here to chop..."
+journal_stop_mine = "You stop mining."
+journal_stop_wood = "You stop lumberjacking."
+
+
+// SKILLS
+skill_armslore = '4'
+
+// PARAMETERS
+RADIUS = 50
+
+HEAVY_LOAD = 80
+
+
+vendor_type = '0x0191|0x0190|0x83F8'
+
+gold_coins_type = '0x0EED'
+gold_coins_color = '0x0000'
+
+
+
+
+
+function cut_wood(){
+
+	//while(true){deposite_type(hatchet_type);Orion.Wait(1000)}
+
+//	goto_town('Newbie Land')
+//	goto_bank()
+
+//goto_town('Minoc')
+//goto_bank()
+//break
+
+
+	goto_bank()
+	deposite_type(lumber_type)
+	deposite_type(hatchet_type)
+	deposite_type(deadwood_type)
+
+	//goto_town('Newbie Land')
+	//goto_bank()
+//	break
+
+	//goto_town('Minoc')
+	//goto_bank()
+	//break
+	
+//	improved_WalkTo(2494,539,0,0,0,0)
+	
+	player_start_point = [Player.X(),Player.Y(),Player.Z()]
+	tree_list = Orion.GetTilesInRect('tree', Player.X()-RADIUS,Player.Y()-RADIUS, Player.X()+RADIUS,Player.Y()+RADIUS);
+
+	goto_bank()
+	deposite_type(lumber_type)
+	deposite_type(hatchet_type)
+	deposite_type(deadwood_type)
+	
+	if(!verify_food())
+		withdraw_type(food_types)
+	
+	if(!verify_tool(hatchet_type)){
+		Orion.Print('NO HATCHET')
+		if(!withdraw_type(hatchet_type)){
+			break
+		}
+	}
+	
+//	break
+//	go_banking(lumber_type)
+	//break
+	
+//	Orion.WalkTo(4307,2744,5,0,255,1,2)
+//	Orion.WalkTo(4297,2874,5,0,255,1,2)
+	
+//	player_start_point = [Player.X(),Player.Y()]
+	
+	//tree_list = Orion.GetTilesInRect('tree', Player.X()-RADIUS,Player.Y()-RADIUS, Player.X()+RADIUS,Player.Y()+RADIUS);
+	
+	while(true){
+	// =====================================
+		
+		improved_WalkTo(player_start_point[0],player_start_point[1],player_start_point[2],0,0,0)
+		
+		iteration_tree_list = []
+		for(c_tree_i=0;c_tree_i<tree_list.length;c_tree_i++){
+			c_point = [tree_list[c_tree_i].X(),tree_list[c_tree_i].Y(),tree_list[c_tree_i].Z()]
+			if(!contain_points(iteration_tree_list,c_point))
+				add_item(iteration_tree_list, c_point)
+		}
+		
+		tota_iterations = iteration_tree_list.length
+		for(c_tree_i=0;c_tree_i<tota_iterations;c_tree_i++){
+			
+			if(get_weight() > 85){
+				goto_bank()
+				deposite_type(lumber_type)
+				deposite_type(deadwood_type)
+				if(!verify_food())
+					withdraw_type(food_types)
+			}
+		
+			player_point = [Player.X(),Player.Y(),Player.Z()]
+			nearest_tree_index = get_nearest_index(player_point ,iteration_tree_list)
+			//Orion.Print([iteration_tree_list[nearest_tree_index][0]+1,iteration_tree_list[nearest_tree_index][1]])
+			tree_pos = iteration_tree_list[nearest_tree_index]
+			improved_WalkTo(tree_pos[0],tree_pos[1],tree_pos[2],1,0)
+			remove_item(iteration_tree_list,nearest_tree_index)
+			
+//			players_list = Orion.FindType('any','any','ground','live',0);
+//			if(players_list.length > 1){
+//				Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+//				continue
+//			}
+			
+			gather_point = [tree_pos[0]-Player.X(), tree_pos[1]-Player.Y(), tree_pos[2]-Player.Z()]
+			
+			gatther(hatchet_type,gather_point[0],gather_point[1])
+			
+			train_arms_lore();
+			
+//			gather(hatchet_type,tree_pos[0],tree_pos[1],tree_pos[2])
+			
+			// IF DEAD GO RESS
+			if(Player.Dead()){
+				c_pos = get_nearest_pos('database\\ressgate_spots.txt')
+				improved_WalkTo(c_pos[0],c_pos[1],c_pos[2],0,0,1)
+			}
+			
+			if(!verify_tool(hatchet_type) || !verify_food()){
+				Orion.Print('NO HATCHET')
+				
+				goto_bank()
+				deposite_type(lumber_type)
+				deposite_type(deadwood_type)
+				
+				if(!verify_food())
+					withdraw_type(food_types)
+				
+				if(!verify_tool(hatchet_type)){
+					Orion.Print('NO HATCHET')
+					if(!withdraw_type(hatchet_type)){
+						break
+					}
+				}
+				
+			}
+		}
+		
+		Orion.Print('FINISH')
+		
+		if(!verify_tool(hatchet_type) || !verify_food()){
+		
+			goto_bank()
+			deposite_type(lumber_type)
+			deposite_type(deadwood_type)
+			if(!verify_food())
+				withdraw_type(food_types)
+			
+			if(!verify_tool(hatchet_type)){
+				Orion.Print('NO HATCHET')
+				if(!withdraw_type(hatchet_type)){
+					break
+				}
+			}
+			
+		}
+		
+	// =====================================
+	}
+	go_banking(lumber_type)
+}
+
+cut_wood()
+

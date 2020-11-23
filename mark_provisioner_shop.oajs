@@ -1,0 +1,4 @@
+//#include library.oajs
+
+write_file("G:\\Games\\UO\\scripts\\provisioner_shop_spots.txt",[Player.X(),Player.Y(),Player.Z()])
+Orion.Print('Marked provisioner shop: ' + [Player.X(),Player.Y(),Player.Z()])

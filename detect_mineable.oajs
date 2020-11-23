@@ -1,0 +1,185 @@
+//Orion.ClearJournal('*');
+
+
+
+
+//bank_container = '0x40234A86'
+bank_container =  Player.BankSerial()
+
+// TYPES
+ore_type = '0x19B8'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+sand_type = '0x0EED'
+
+// SKILLS
+skill_armslore = '4'
+
+// ------------------------------------------------------------------
+function wait_stop_mining(){
+	//while(true){
+	for(i=0;i<60;i++){ // espera 2min
+		journal_find = Orion.InJournal('stop mining')
+		if(journal_find !== null){
+			break;
+		}
+		Orion.Wait(500);
+	}
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function mine(pickaxe,x,y){
+//	pickaxe = '0x40222AF1'
+	Orion.Wait(500);
+	Orion.ClearJournal('stop mining');
+	
+	Orion.UseObject(pickaxe);
+	if (Orion.WaitForTarget(2000))
+		Orion.TargetTileRelative('any', x, y, 65536);
+		wait_stop_mining();
+}
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+function re_equip_pickaxe(){
+	Orion.Unequip(1);
+	c_pickaxe = Orion.FindType(pickaxe_type)[0]
+	Orion.Equip(c_pickaxe);
+	return c_pickaxe
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function use_skill(c_skill,c_target){
+	Orion.Wait(500);
+	Orion.UseSkill(c_skill);
+	if (Orion.WaitForTarget(1000))
+		Orion.TargetObject(c_target);
+}
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+function write_file(c_file,c_message){
+	fileObject = Orion.NewFile();
+	fileObject.Append(c_file);
+	fileObject.WriteLine(c_message);
+	fileObject.Close();
+}
+// ------------------------------------------------------------------
+
+
+X_Y_ini = [4202,2888]
+X_Y_fim = [4214,2917]
+Orion.Print('INI')
+for(c_X =X_Y_ini[0];c_X<X_Y_fim[0]+1;c_X++){
+	for(c_Y =X_Y_ini[1];c_Y<X_Y_fim[1]+1;c_Y++){
+		Orion.Print([c_X,c_Y])
+		write_file('G:\\Games\\UO\\scripts\\log.txt',[c_X,c_Y])
+	   Orion.WalkTo(c_X,c_Y,0,0,255,0)
+		
+
+		Orion.ClearJournal();		
+		for(i=0;i<60;i++){ // espera 2min
+		
+			c_pickaxe = re_equip_pickaxe();
+			//Orion.ClearJournal('start digging...');
+			//Orion.ClearJournal('mine or dig anything');
+			Orion.UseObject(c_pickaxe);
+			if (Orion.WaitForTarget(2000))
+				Orion.TargetTileRelative('any', 0, 0, 65536);
+				
+			journal_mineable = Orion.InJournal('start digging...')
+			journal_not_mineable = Orion.InJournal('mine or dig anything')
+			
+			if(journal_mineable !== null){
+				Orion.Print('journal_mineable');
+				write_file('G:\\Games\\UO\\scripts\\log.txt','journal_mineable')
+				write_file('G:\\Games\\UO\\scripts\\mineable_spots.txt',[Player.X(),Player.Y(),Player.Z()])
+				
+				Orion.ClearJournal();
+				wait_stop_mining();
+				break
+			}
+			
+			if(journal_not_mineable !== null){
+			   write_file('G:\\Games\\UO\\scripts\\log.txt','journal_not_mineable')
+				Orion.Print('journal_not_mineable');
+				Orion.ClearJournal();
+				break
+			}
+			
+			Orion.Wait(500);
+		}
+		
+		
+//		Orion.Wait(2000);
+	}
+}
+Orion.Print('FIM')
+
+
+
+
+break
+
+//var pickaxe = '0x40222AF1'
+//last_stop_mining_time = 0
+
+while(true){
+// =====================================
+
+	c_pickaxe = re_equip_pickaxe();
+	
+//	Orion.WalkTo(4212,2915,-21,0,255,0)
+//	mine(c_pickaxe,0,0)
+//	wait_stop_mining();
+	
+	fileObject = Orion.NewFile();
+	fileObject.Open('G:\\Games\\UO\\scripts\\sand_mine_pos_list.txt');
+	while(file_line = fileObject.ReadLine()){
+		c_pickaxe = re_equip_pickaxe();
+		c_position = file_line.split(',')
+		Orion.WalkTo(c_position[0],c_position[1],c_position[2],0,255,0)
+		use_skill(skill_armslore,c_pickaxe)
+		mine(c_pickaxe,0,0)
+		use_skill(skill_armslore,c_pickaxe)
+		mine(c_pickaxe,0,0)
+	}
+	fileObject.Close();
+	
+	// GUARDA BANCO
+//	Orion.WalkTo(4246,2841,0,0,255,0)
+//	Orion.WalkTo(4223,2836,5,0,255,0)
+	Orion.WalkTo(4226,2837,5,0,255,0)
+	Orion.WalkTo(4223,2833,5,0,255,0)
+	
+	Orion.Say('bank');
+	Orion.Wait(2000);
+	
+	c_obj = Orion.FindType(sand_type)
+	
+	bank_container =  Player.BankSerial()
+	for(i=0;i<c_obj.length;i++){
+		Orion.MoveItem(c_obj[i], 0, bank_container);
+		Orion.Wait(500);
+	}
+	
+	Orion.Wait(10000);
+//	Orion.WalkTo(4206,2854,0,0,255,0)
+	Orion.WalkTo(4221,2882,0,0,255,0)
+	
+// =====================================
+}
+
+
+break
+
+
+fileObject = Orion.NewFile();
+fileObject.Append('G:\\Games\\UO\\scripts\\sand_mine_pos_list.txt');
+fileObject.WriteLine([Player.X(),Player.Y(),Player.Z()]);
+fileObject.Close();
+break

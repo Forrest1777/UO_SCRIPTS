@@ -1,0 +1,74 @@
+//#include library.oajs
+
+
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y()]);
+//break
+
+// PARAMETERS
+RADIUS = 200
+
+
+
+function cut_wood(){
+	go_banking(lumber_type)
+	//break
+	
+//	Orion.WalkTo(4307,2744,5,0,255,1,2)
+	Orion.WalkTo(4297,2874,5,0,255,1,2)
+	
+	player_start_point = [Player.X(),Player.Y()]
+	
+	tree_list = Orion.GetTilesInRect('tree', Player.X()-RADIUS,Player.Y()-RADIUS, Player.X()+RADIUS,Player.Y()+RADIUS);
+	
+	while(true){
+	// =====================================
+	
+		Orion.WalkTo(player_start_point[0],player_start_point[1],5,0,255,0)
+	
+		iteration_tree_list = []
+		for(c_tree_i=0;c_tree_i<tree_list.length;c_tree_i++){
+			c_point = [tree_list[c_tree_i].X(),tree_list[c_tree_i].Y()]
+			if(!contain_points(iteration_tree_list,c_point))
+				add_item(iteration_tree_list, c_point)
+		}
+		
+		tota_iterations = iteration_tree_list.length
+		for(c_tree_i=0;c_tree_i<tota_iterations;c_tree_i++){
+		
+			if(get_weight() > 85){
+				go_banking(lumber_type)
+			}
+		
+			player_point = [Player.X(),Player.Y()]
+			nearest_tree_index = get_nearest_index(player_point ,iteration_tree_list)
+			//Orion.Print([iteration_tree_list[nearest_tree_index][0]+1,iteration_tree_list[nearest_tree_index][1]])
+			Orion.WalkTo(iteration_tree_list[nearest_tree_index][0]+1,iteration_tree_list[nearest_tree_index][1],5,0,255,0)
+			remove_item(iteration_tree_list,nearest_tree_index)
+		
+			train_arms_lore();
+			
+			players_list = Orion.FindType('any','any','ground','live',0);
+			if(players_list.length > 1){
+				Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+				continue
+			}
+			
+			gatther(hatchet_type,-1,0)
+			
+			if(!verify_tool(hatchet_type)){
+				Orion.Print('NO HATCHET')
+				break
+			}
+		}
+		
+		Orion.Print('OUT')
+		
+		if(!verify_tool(hatchet_type))
+			break
+		
+	// =====================================
+	}
+	go_banking(lumber_type)
+}

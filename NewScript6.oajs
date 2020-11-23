@@ -1,0 +1,4 @@
+//#include library.oajs
+
+write_file("G:\\Games\\UO\\scripts\\taming_spots.txt",[Player.X(),Player.Y(),Player.Z()])
+Orion.Print('Marked Position: ' + [Player.X(),Player.Y(),Player.Z()])// Put your code here...

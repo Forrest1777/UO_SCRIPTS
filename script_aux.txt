@@ -1,0 +1,98 @@
+var pickaxe = '0x40222AF1'
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 0, 2, 65536);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 2, 0, 65536);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 0, -2, 65536);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', -2, 0, 65535);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', -2, 2, 65535);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', -2, -2, 65536);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 2, 2, 65536);
+Orion.Wait(3000);
+
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 2, -2, 65535);
+Orion.Wait(3000);
+
+Orion.Step(0, true);
+Orion.Wait(215)
+
+Orion.Step(0, true);
+Orion.Wait(215)
+
+Orion.Step(0, true);
+Orion.Wait(215)
+
+
+
+
+
+
+
+//Orion.ClearJournal('*');
+
+//Orion.Print(Orion.InJournal('stop mining').Text());
+
+test = []
+test[0] = [0,0]
+Orion.Print(test[0]);
+break
+
+Orion.ClearJournal();
+var pickaxe = '0x40222AF1'
+last_stop_mining_time = 0
+
+// ------------------------------------------------------------------
+Orion.UseObject(pickaxe);
+if (Orion.WaitForTarget(1000))
+	Orion.TargetTileRelative('any', 0, 2, 65536);
+Orion.Wait(3000);
+// ------------------------------------------------------------------
+
+
+// ------------------------------------------------------------------
+while(true){
+	journal_find = Orion.InJournal('stop mining')
+	if(journal_find == null){
+		Orion.Print('num achou');
+	}else{
+		stop_mining_time = journal_find.Timer();
+		if(stop_mining_time > last_stop_mining_time){
+			Orion.Print('Terminou de minerar');
+			last_stop_mining_time = stop_mining_time;
+			break;
+		}		
+	}
+}
+// ------------------------------------------------------------------
+
+Orion.Wait(1000);
+
+
+

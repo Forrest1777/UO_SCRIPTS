@@ -1,0 +1,76 @@
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+
+katana_type = '0x13FE'
+gorget_type = '0x1413'
+plate_gloves_type = '0x1414'
+plate_helm = '0x1412'
+plate_arms = '0x1410'
+plate_legs = '0x1411'
+breatplate = '0x1415'
+
+tong_type = '0x0FBB'
+
+forge_type = '0x0FB1'
+
+// SKILLS
+skill_armslore = '4'
+
+// PARAMETERS
+RADIUS = 50
+
+
+//#include library.oajs
+
+//Orion.Info()
+//break
+
+
+//tong_serial = Orion.FindType(tong_type)[0]
+//Orion.UseObject(tong_serial);
+//break
+
+//smelt_serial = Orion.FindType(gorget_type)[0]
+//Orion.TargetObject(smelt_serial);
+//break
+
+//forge_serial = Orion.FindType(forge_type,-1,'ground','', 1)[0]
+//Orion.TargetObject(forge_serial);
+//break
+
+//TextWindow.Open();
+//TextWindow.Print(forge_serial);
+
+
+//obj_list = Orion.FindType(forge_type)
+
+//TextWindow.Open();
+//TextWindow.Print(forge);
+//break
+while(true){
+	tong_serial = Orion.FindType(tong_type)[0]
+	
+	if(tong_serial != null){
+		Orion.UseObject(tong_serial);
+		if (Orion.WaitForTarget(1000)){
+			smelt_serial = Orion.FindType(gorget_type)[0]
+			if(smelt_serial != null){
+				Orion.TargetObject(smelt_serial);
+				
+				if (Orion.WaitForTarget(1000)){
+				
+					forge_serial = Orion.FindType(forge_type,-1,'ground','', 1)[0]
+					if(forge_serial != null){
+						Orion.TargetObject(forge_serial);
+					}
+				}
+			}
+		}
+	}
+	Orion.Wait(3*1000)
+}

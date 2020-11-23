@@ -1,0 +1,104 @@
+//#include library.oajs
+
+//Orion.Info()
+//break
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+
+// PARAMETERS
+
+//break
+
+
+//Serial=0x40CFBE4A Graphic=0x2006 Name=A Corpse Of Forrestz
+//Count: 400  Color: 0x8460  Layer: 4
+//X=2543 Y=568 Z=0 C=0xFFFFFFFF F=0x00
+//Properties:
+//A Corpse Of Forrestz
+
+//TextWindow.Open();
+//TextWindow.Print('Name: '+human_obj.FullName());
+//TextWindow.Print('Dead: '+human_obj.Dead());
+//TextWindow.Print('Notoriety: '+human_obj.Notoriety());
+//TextWindow.Print('Profile: '+human_obj.Profile());
+//TextWindow.Print('IsHuman: '+human_obj.IsHuman());
+//TextWindow.Print('Properties: '+human_obj.Properties());
+//TextWindow.Print('Distance: '+human_obj.Distance());
+//TextWindow.Print('Container: '+human_obj.Container());
+//TextWindow.Print('Serial: '+human_obj.Serial());
+
+
+
+enemy_list = []
+
+function guards_alert(){
+	TextWindow.Open();
+	
+	//human_list = Orion.FindType('any', 'any', 'ground', 'dead', 50, '');
+	
+	while(true){
+	
+	
+		human_list = Orion.FindType('any', 'any', 'ground', 'any', 50);
+		
+		
+		//TextWindow.Print(human_list);
+		
+		for(c_human=0;c_human<human_list.length;c_human++){
+			human_obj = Orion.FindObject(human_list[c_human]);
+			
+//			TextWindow.Print('Name: '+human_obj.FullName());
+			
+			if(human_obj.Notoriety() >=3 && human_obj.Notoriety() <=6 && human_obj.IsHuman()){
+				improved_WalkTo(human_obj.X(),human_obj.Y(),human_obj.Z(),5,0,0)
+				add_item(enemy_list,human_obj.Serial())
+				TextWindow.Print('CALL GUARDS!');
+				TextWindow.Print('ENEMY - '+human_obj.Serial());
+				
+				TextWindow.Print('Name: '+human_obj.FullName());
+				TextWindow.Print('Dead: '+human_obj.Dead());
+				TextWindow.Print('Notoriety: '+human_obj.Notoriety());
+				TextWindow.Print('Profile: '+human_obj.Profile());
+				TextWindow.Print('IsHuman: '+human_obj.IsHuman());
+				TextWindow.Print('Properties: '+human_obj.Properties());
+				TextWindow.Print('Distance: '+human_obj.Distance());
+				TextWindow.Print('Container: '+human_obj.Container());
+				TextWindow.Print('Serial: '+human_obj.Serial());
+				
+				Orion.Say('.guards')
+				Orion.Wait(2*1000)
+			}
+			TextWindow.Print(enemy_list);
+			TextWindow.Print(human_obj.Serial());
+			TextWindow.Print((enemy_list).indexOf(human_obj.Serial()) != -1);
+			if(human_obj.Properties().indexOf('Corpse') != -1){
+			//if(human_obj.Notoriety() == 0 || (human_obj.Notoriety() >=3 && human_obj.Notoriety() <=6)){
+					
+					TextWindow.Print('Serial: '+human_obj.Serial());
+					improved_WalkTo(human_obj.X(),human_obj.Y(),human_obj.Z(),0,0,0)
+					
+					Orion.OpenContainer(human_obj.Serial());
+					
+					obj_list = Orion.FindType('any', 'any', human_obj.Serial())
+				
+			//	bank_container =  Player.BankSerial()
+					for(obj_i=0;obj_i<obj_list.length;obj_i++){
+						Orion.MoveItem(obj_list[obj_i]);
+						Orion.Wait(500);
+					}
+					
+					goto_bank()
+					while(deposite_type('any'))
+					TextWindow.Print('Wait 10min');
+					Orion.Wait(10*60*1000)
+					enemy_list = []
+					break
+			}
+	
+		}
+	
+		Orion.Wait(2000)
+	}// end While
+
+}

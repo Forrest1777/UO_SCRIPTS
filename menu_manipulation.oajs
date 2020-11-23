@@ -1,0 +1,114 @@
+//#include library.oajs
+
+
+//Orion.Wait(5*1000)
+//Orion.MouseClick(310, 150, 'left');
+//break
+
+// CITIES
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+//Orion.Info();
+//break
+
+DESTINATION = 'Market'
+DESTINATION = 'Newbie Land'
+
+gump_obj = Orion.GetGump(0);
+
+gump_btn_list = gump_obj.ButtonList()
+gump_cmd_list = gump_obj.CommandList();
+gump_txt_list = gump_obj.TextList()
+
+
+OK_BTN_ATTR = gump_btn_list[0].trim().split(' ')
+CANCEL_BTN_ATTR = gump_btn_list[1].trim().split(' ')
+
+OK_BTN_ID = OK_BTN_ATTR[OK_BTN_ATTR.length-1]
+CANCEL_BTN_ID = CANCEL_BTN_ATTR[CANCEL_BTN_ATTR.length-1]
+
+//TextWindow.Open();
+//TextWindow.Print(OK_BTN_ATTR[OK_BTN_ATTR.length-1]);
+//TextWindow.Print(CANCEL_BTN_ATTR[CANCEL_BTN_ATTR.length-1]);
+//break
+
+
+
+text_list = []
+for(gump_i=1;gump_i<gump_txt_list.length;gump_i++){
+	add_item(text_list,gump_txt_list[gump_i])
+}
+
+radio_list = []
+for(gump_i=0;gump_i<gump_cmd_list.length;gump_i++){
+	if(gump_cmd_list[gump_i].indexOf('radio') != -1){
+		c_attrs = gump_cmd_list[gump_i].trim().split(' ')
+		add_item(radio_list, [text_list[radio_list.length],c_attrs[c_attrs.length-1]])
+	}
+}
+
+DESTINATION_CONF = ''
+
+for(radio_i=0;radio_i<radio_list.length;radio_i++){
+	if(radio_list[radio_i][0] == DESTINATION)
+		DESTINATION_CONF = radio_list[radio_i]
+}
+
+gump_hook = Orion.CreateGumpHook(OK_BTN_ID);
+gump_hook.AddCheck(2049, false);
+gump_hook.AddCheck(DESTINATION_CONF[1], true);
+gump_obj.Select(gump_hook);
+break
+
+TextWindow.Open();
+TextWindow.Print(DESTINATION_CONF);
+TextWindow.Print(radio_list);
+break
+
+TextWindow.Open();
+TextWindow.Print(radio_list);
+//TextWindow.Print(text_list);
+
+
+TextWindow.Open();
+TextWindow.Print(gump_cmd_list[6]);
+
+break
+
+gump_count = Orion.GumpCount()
+
+gump_obj = Orion.GetGump(0);
+
+Orion.CreateGumpHook(0);
+
+TextWindow.Open();
+TextWindow.Print(gump_obj.ButtonList());
+TextWindow.Print(gump_obj.CommandList());
+TextWindow.Print(gump_obj.TextList());
+break
+
+menu_obj = Orion.GetMenu(0)
+Orion.Print(menu_obj.ID());
+Orion.Print(menu_obj.Name());
+Orion.Print(menu_obj.ItemsCount());
+Orion.Print(menu_obj.ItemName(0));
+
+//TextWindow.Open();
+//TextWindow.Print(menu_obj.ItemName(0));
+
+Orion.Print(Orion.InfoMenu('index'));
+
+Orion.SelectMenu(menu_obj.Name(), menu_obj.ItemName(0));
+
+
+

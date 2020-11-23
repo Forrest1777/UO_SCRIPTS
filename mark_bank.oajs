@@ -1,0 +1,4 @@
+//#include library.oajs
+
+write_file("databaase\\bank_spots.txt",[Player.X(),Player.Y(),Player.Z()])
+Orion.Print('Marked Bank: ' + [Player.X(),Player.Y(),Player.Z()])

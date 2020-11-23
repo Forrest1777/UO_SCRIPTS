@@ -1,0 +1,15 @@
+//#include library.oajs
+
+while(true){
+	
+	Orion.UseSkill('Tracking');
+	
+	track_menu = Orion.GetMenu('last');
+	
+	if(track_menu.Name() == 'Select a category.'){
+		track_menu.Close()
+	}
+	
+	Orion.Wait(2*1000)
+	
+}

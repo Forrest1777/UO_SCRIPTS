@@ -1,0 +1,68 @@
+//#include library.oajs
+
+// LISTA thread ------------------------------------------------
+shoplist_obj = Orion.GetShopList('thread');
+shoplist_obj.SetName('thread');
+
+shop_list = []
+//[0x0FA0, 0x0000] 10 'spool of thread' at 10 gp
+shop_item = new ShopListItem('');
+shop_item.SetName('spool of thread');
+shop_item.SetGraphic('0x0FA0');
+shop_item.SetColor('0x0000');
+shop_item.SetCount(10);
+shop_item.SetPrice(10);
+add_item(shop_list, shop_item)
+
+shoplist_obj.SetItems(shop_list);
+Orion.UpdateShopList(shoplist_obj);
+// ---------------------------------------------------------------
+
+// LISTA bandages ------------------------------------------------
+shoplist_obj = Orion.GetShopList('bandages');
+shoplist_obj.SetName('bandages');
+
+shop_list = []
+//[0x0E21, 0x0000] 300 'clean bandage' at 3 gp
+shop_item = new ShopListItem('');
+shop_item.SetName('clean bandage');
+shop_item.SetGraphic('0x0E21');
+shop_item.SetColor('0x0000');
+shop_item.SetCount(300);
+shop_item.SetPrice(3);
+add_item(shop_list, shop_item)
+
+shoplist_obj.SetItems(shop_list);
+Orion.UpdateShopList(shoplist_obj);
+// ---------------------------------------------------------------
+
+// LISTA arrows_bolts ------------------------------------------------
+shoplist_obj = Orion.GetShopList('arrows_bolts');
+shoplist_obj.SetName('arrows_bolts');
+
+shop_list = []
+//[0x0F3F, 0x0000] 150 'arrow' at 6 gp
+shop_item = new ShopListItem('');
+shop_item.SetName('arrow');
+shop_item.SetGraphic('0x0F3F');
+shop_item.SetColor('0x0000');
+shop_item.SetCount(150);
+shop_item.SetPrice(6);
+add_item(shop_list, shop_item)
+
+//[0x1BFB, 0x0000] 150 'bolt' at 7 gp
+shop_item = new ShopListItem('');
+shop_item.SetName('bolt');
+shop_item.SetGraphic('0x1BFB');
+shop_item.SetColor('0x0000');
+shop_item.SetCount(150);
+shop_item.SetPrice(7);
+add_item(shop_list, shop_item)
+
+shoplist_obj.SetItems(shop_list);
+Orion.UpdateShopList(shoplist_obj);
+// ---------------------------------------------------------------
+
+shoplist_obj.SetItems(shop_list);
+
+Orion.UpdateShopList(shoplist_obj);

@@ -1,0 +1,71 @@
+//Orion.LoadScript('G:\\Games\\UO\\gameZuluhotel Ultima Online Shard\\OA\\library.oajs');
+
+
+import * as library from 'G:\\Games\\UO\\gameZuluhotel Ultima Online Shard\\OA\\library.oajs';
+
+while(true){
+// =====================================
+	
+	fileObject = Orion.NewFile();
+	fileObject.Open('G:\\Games\\UO\\scripts\\sand_mine_pos_list.txt');
+	while(file_line = fileObject.ReadLine()){
+	
+		c_position = file_line.split(',')
+		Orion.WalkTo(c_position[0],c_position[1],c_position[2],0,255,0)
+		
+		train_arms_lore();
+		
+		obj_list = Orion.FindType('any','any','ground','live',0);
+		if(obj_list.length > 1){
+//			Orion.Print(obj_list.length)
+			Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+			continue
+		}
+		
+		mine(0,0)
+		
+		if(!verify_equip(pickaxe_type))
+			break
+
+	}
+	fileObject.Close();
+	
+	if(!verify_equip(pickaxe_type))
+		break
+	
+}
+
+break
+	// GUARDA BANCO
+//	Orion.WalkTo(4246,2841,0,0,255,0)
+//	Orion.WalkTo(4223,2836,5,0,255,0)
+Orion.WalkTo(4226,2837,5,0,255,0)
+Orion.WalkTo(4223,2833,5,0,255,0)
+
+Orion.Say('bank');
+Orion.Wait(2000);
+
+c_obj = Orion.FindType(sand_type)
+
+bank_container =  Player.BankSerial()
+for(i=0;i<c_obj.length;i++){
+	Orion.MoveItem(c_obj[i], 0, bank_container);
+	Orion.Wait(500);
+}
+
+Orion.Wait(10000);
+//	Orion.WalkTo(4206,2854,0,0,255,0)
+Orion.WalkTo(4221,2882,0,0,255,0)
+	
+// =====================================
+
+
+
+break
+
+
+fileObject = Orion.NewFile();
+fileObject.Append('G:\\Games\\UO\\scripts\\sand_mine_pos_list.txt');
+fileObject.WriteLine([Player.X(),Player.Y(),Player.Z()]);
+fileObject.Close();
+break

@@ -1,0 +1,59 @@
+//#include library.oajs
+
+
+// PARAMETERS
+RADIUS = 5
+
+//Orion.WalkTo(4208,2907,-21,0,255,1,2)
+
+// =====================================
+function mine_ground(){
+	while(true){
+		ini_pos =  [Player.X()-RADIUS,Player.Y()-RADIUS]
+		end_pos =  [Player.X()+RADIUS,Player.Y()+RADIUS]
+		
+		pos_list = []
+		
+		for(c_pos_x=ini_pos[0];c_pos_x<=end_pos[0];c_pos_x++){
+			for(c_pos_y=ini_pos[1];c_pos_y<=end_pos[1];c_pos_y++){
+				add_item(pos_list, [c_pos_x,c_pos_y])
+			}
+		}
+		
+		iteration_list = []
+		for(c_pos_i=0;c_pos_i<pos_list.length;c_pos_i++){
+			c_point = [pos_list[c_pos_i][0],pos_list[c_pos_i][1]]
+			if(!contain_points(iteration_list,c_point))
+				add_item(iteration_list, c_point)
+		}
+		
+		tota_iterations = iteration_list.length
+		for(c_pos_i=0;c_pos_i<tota_iterations;c_pos_i++){
+		
+			player_point = [Player.X(),Player.Y()]
+			nearest_index = get_nearest_index(player_point ,iteration_list)
+			Orion.WalkTo(iteration_list[nearest_index][0],iteration_list[nearest_index][1],0,0,255,0)
+			remove_item(iteration_list,nearest_index)
+			
+			//-------
+			train_arms_lore();
+			
+			obj_list = Orion.FindType('any','any','ground','live',0);
+			if(obj_list.length > 1){
+				Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+				continue
+			}
+			
+			gatther(pickaxe_type,0,0)
+			//-------
+			
+			if(!verify_tool(pickaxe_type))
+				break
+			
+		}
+		
+		if(!verify_tool(pickaxe_type))
+			break
+	}
+}
+// =====================================

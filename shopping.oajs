@@ -1,0 +1,71 @@
+//#include library.oajs
+
+TextWindow.Open();
+TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+break
+
+
+
+TextWindow.Open();
+TextWindow.Print(Orion.MenuCount());
+break
+
+gump_obj = Orion.GetLastGump();
+
+gump_btn_list = gump_obj.ButtonList()
+gump_cmd_list = gump_obj.CommandList();
+gump_txt_list = gump_obj.TextList()
+
+TextWindow.Open();
+TextWindow.Print(gump_btn_list);
+TextWindow.Print(gump_cmd_list);
+TextWindow.Print(gump_txt_list);
+break
+
+TextWindow.Open();
+TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+break
+
+
+// 4238,2822,0
+// 4248,2822,0
+
+
+break
+TextWindow.Open();
+TextWindow.Print(Orion.IsShopping());
+break
+
+
+cheese_type = '0x097E' 
+muffin_type = '0x09EA'
+
+cheese_color = '0x0000'
+muffin_color = '0x0000'
+
+vendor_obj = Orion.FindObject('0x0003936D');
+
+//Orion.Info()
+//break
+
+
+Orion.Buy('muffin');
+break
+shop_obj = Orion.GetShopList('cheese');
+
+shop_list = shop_obj.Items()
+
+//Orion.WaitForShop(10*1000);
+
+TextWindow.Open();
+TextWindow.Print('Count '+shop_list[0].Count());
+
+break
+TextWindow.Print('FullName '+vendor_obj.FullName());
+TextWindow.Print('Properties '+vendor_obj.Properties());
+TextWindow.Print('IsHuman '+vendor_obj.IsHuman());
+TextWindow.Print('IsPlayer '+vendor_obj.IsPlayer());
+TextWindow.Print('Hits '+vendor_obj.Hits());
+TextWindow.Print('Race '+vendor_obj.Race());
+TextWindow.Print('Title '+vendor_obj.Title());
+

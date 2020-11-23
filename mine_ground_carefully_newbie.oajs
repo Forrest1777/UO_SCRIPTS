@@ -1,0 +1,247 @@
+//#include library.oajs
+
+
+
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+
+// TYPES
+ore_type = '0x19B8'
+lumber_type = '0x1BDD'
+pickaxe_type = '0x0E85'
+fishsteak_type = '0x097B'
+hatchet_type = '0x0F43'
+sand_type = '0x0EED'
+deadwood_type = '0x0F90'
+amber_type = '0x0F25'
+
+tattered_map_type = '0x14ED'
+
+food_types = '0x097E|0x097B'
+
+//JOURNAL
+journal_doing = "I am already doing something else."
+journal_cant_wood = "You can't get any wood from that."
+journal_cant_mine = "You can't mine or dig anything there."
+journal_start_dig = "You start digging..."
+journal_start_mine = "You start mining..."
+journal_start_wood = "You start lumberjacking..."
+journal_no_metal = "There is no metal here to mine."
+journal_no_sand = "There's no sand left there."
+journal_no_wood = "There's no wood here to chop..."
+journal_stop_mine = "You stop mining."
+journal_stop_wood = "You stop lumberjacking."
+
+
+// SKILLS
+skill_armslore = '4'
+
+// PARAMETERS
+RADIUS = 5
+
+HEAVY_LOAD = 80
+
+
+vendor_type = '0x0191|0x0190|0x83F8'
+
+gold_coins_type = '0x0EED'
+gold_coins_color = '0x0000'
+
+
+// Moonglow
+// Britain
+// Jhelom
+// Yew
+// Minoc
+// Trinsic
+// Skara Brae
+// Magincia
+// Market
+// Newbie Land
+
+MINOC_MINE_POS = [2564,474,-45]
+NEWBIE_MINE_POS = [4206,2902,-20]
+
+MINE_POS = NEWBIE_MINE_POS
+
+function mine_ground(){
+
+	//while(true){deposite_type(hatchet_type);Orion.Wait(500)}
+	//while(true){deposite_type(pickaxe_type);Orion.Wait(1000)}
+	
+	
+	//while(true){withdraw_type(hatchet_type);Orion.Wait(500)}
+	
+	
+	//goto_town('Newbie Land')
+//	goto_town('Minoc')
+//	goto_bank()
+	//break
+	
+//	goto_town('Minoc')
+//goto_bank()
+//deposite_type(ore_type)
+//deposite_type(pickaxe_type)
+//deposite_type(amber_type)
+//deposite_type(tattered_map_type)
+//break
+	
+//	improved_WalkTo(2494,539,0,0,0,0)
+	
+	
+	while(true){
+	// =====================================
+		
+		if(!verify_tool(pickaxe_type) || !verify_food()){
+			
+			goto_bank()
+			deposite_type(ore_type)
+			deposite_type(amber_type)
+			deposite_type(tattered_map_type)
+			
+			if(!verify_food())
+				withdraw_type(food_types)
+			
+			if(!verify_tool(pickaxe_type)){
+				Orion.Print('NO PICKAXE')
+				if(!withdraw_type(pickaxe_type)){
+					break
+				}
+			}
+		}
+		
+		improved_WalkTo(MINE_POS[0],MINE_POS[1],MINE_POS[2],0,0,0)
+	//	break
+		player_start_point = [Player.X(),Player.Y(),Player.Z()]
+		//tree_list = Orion.GetTilesInRect('tree', Player.X()-RADIUS,Player.Y()-RADIUS, Player.X()+RADIUS,Player.Y()+RADIUS);
+		
+		// BUINDING POSITIONS ----------------------------------------
+		pos_list = []
+		fileObject = Orion.NewFile();
+		fileObject.Open('database\\sand_mine_pos_list.txt');
+		while(file_line = fileObject.ReadLine()){
+			c_position = file_line.split(',')
+			add_item(pos_list, [c_position[0],c_position[1],c_position[2]])
+		}
+		fileObject.Close();
+		// ----------------------------------------------------------------
+		
+		if(!verify_food())
+			withdraw_type(food_types)
+		
+		if(!verify_tool(pickaxe_type)){
+			Orion.Print('NO PICKAXE')
+			if(!withdraw_type(pickaxe_type)){
+				break
+			}
+		}
+		
+		improved_WalkTo(player_start_point[0],player_start_point[1],player_start_point[2],0,0,0)
+		
+		iteration_pos_list = []
+		for(c_pos_i=0;c_pos_i<pos_list.length;c_pos_i++){
+			c_point = [pos_list[c_pos_i][0], pos_list[c_pos_i][1], pos_list[c_pos_i][2]]
+			if(!contain_points(iteration_pos_list,c_point))
+				add_item(iteration_pos_list, c_point)
+		}
+		
+		tota_iterations = iteration_pos_list.length
+		for(c_pos_i=0;c_pos_i<tota_iterations;c_pos_i++){
+			
+			if(get_weight() > 85){
+				goto_bank()
+				deposite_type(ore_type)
+				deposite_type(amber_type)
+				deposite_type(tattered_map_type)
+				
+				if(!verify_food())
+					withdraw_type(food_types)
+				
+				if(!verify_tool(pickaxe_type)){
+					Orion.Print('NO PICKAXE')
+					if(!withdraw_type(pickaxe_type)){
+						break
+					}
+				}
+			}
+		
+			player_point = [Player.X(),Player.Y(),Player.Z()]
+			nearest_pos_index = get_nearest_index(player_point ,iteration_pos_list)
+			
+			//TextWindow.Open();
+			//TextWindow.Print(iteration_pos_list[nearest_pos_index]);
+			
+			//Orion.Print([iteration_tree_list[nearest_tree_index][0]+1,iteration_tree_list[nearest_tree_index][1]])
+			c_point = iteration_pos_list[nearest_pos_index]
+			improved_WalkTo(c_point[0],c_point[1],c_point[2],1,0)
+			remove_item(iteration_pos_list,nearest_pos_index)
+			
+//			players_list = Orion.FindType('any','any','ground','live',0);
+//			if(players_list.length > 1){
+//				Orion.Wait(Math.floor((Math.random() * 1000) + 1));
+//				continue
+//			}
+			
+			gather_point = [c_point[0]-Player.X(), c_point[1]-Player.Y(), c_point[2]-Player.Z()]
+			
+			gatther(pickaxe_type,gather_point[0],gather_point[1])
+			
+			train_arms_lore();
+			
+//			gather(hatchet_type,tree_pos[0],tree_pos[1],tree_pos[2])
+			
+			// IF DEAD GO RESS
+			if(Player.Dead()){
+				c_pos = get_nearest_pos('database\\ressgate_spots.txt')
+				improved_WalkTo(c_pos[0],c_pos[1],c_pos[2],0,0,1)
+			}
+			
+			if(!verify_tool(pickaxe_type) || !verify_food()){
+				
+				goto_bank()
+				deposite_type(ore_type)
+				deposite_type(amber_type)
+				deposite_type(tattered_map_type)
+				
+				if(!verify_food())
+					withdraw_type(food_types)
+				
+				if(!verify_tool(pickaxe_type)){
+					Orion.Print('NO PICKAXE')
+					if(!withdraw_type(pickaxe_type)){
+						break
+					}
+				}
+			}
+			
+		}
+		
+		Orion.Print('FINISH')
+		
+		if(!verify_tool(pickaxe_type) || !verify_food()){
+		
+			goto_bank()
+			deposite_type(ore_type)
+			deposite_type(amber_type)
+			deposite_type(tattered_map_type)
+			
+			if(!verify_food())
+				withdraw_type(food_types)
+			
+			if(!verify_tool(pickaxe_type)){
+				Orion.Print('NO PICKAXE')
+				if(!withdraw_type(pickaxe_type)){
+					break
+				}
+			}
+			
+		}
+		
+	// =====================================
+	}
+	go_banking(ore_type)
+}
+
+mine_ground()
+

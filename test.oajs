@@ -1,0 +1,77 @@
+//#include library.oajs
+
+//Orion.Info()
+//break
+//TextWindow.Open();
+//TextWindow.Print([Player.X(),Player.Y(),Player.Z()]);
+//break
+
+// PARAMETERS
+
+//break
+
+
+//Serial=0x40CFBE4A Graphic=0x2006 Name=A Corpse Of Forrestz
+//Count: 400  Color: 0x8460  Layer: 4
+//X=2543 Y=568 Z=0 C=0xFFFFFFFF F=0x00
+//Properties:
+//A Corpse Of Forrestz
+
+//TextWindow.Open();
+//TextWindow.Print('Name: '+human_obj.FullName());
+//TextWindow.Print('Dead: '+human_obj.Dead());
+//TextWindow.Print('Notoriety: '+human_obj.Notoriety());
+//TextWindow.Print('Profile: '+human_obj.Profile());
+//TextWindow.Print('IsHuman: '+human_obj.IsHuman());
+//TextWindow.Print('Properties: '+human_obj.Properties());
+//TextWindow.Print('Distance: '+human_obj.Distance());
+//TextWindow.Print('Container: '+human_obj.Container());
+//TextWindow.Print('Serial: '+human_obj.Serial());
+
+// -------------------------------------------------------------------------------------------------
+function goto_bank(){
+	c_pos = get_nearest_pos('database\\bank_spots.txt')
+	reach_pos([c_pos[0],c_pos[1],c_pos[2]])
+	vendor_list = Orion.FindType(vendor_type,-1,'ground','', 10);
+	
+	VALID_VENDORS = 0
+	for(vendor_index=0;vendor_index<vendor_list.length;vendor_index++){
+		vendor_obj = Orion.FindObject(vendor_list[vendor_index]);
+		if(vendor_obj.Properties().indexOf('Invulnerable') == -1){
+			remove_item(vendor_list,vendor_index)
+		}
+	}
+	
+	reach_nearest_serial(vendor_list)
+	Orion.Say('bank');
+	Orion.Wait(2000);
+}
+// -------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+function reach_nearest_serial(serial_list){
+
+	iteration_list = []
+	for(c_pos_i=0;c_pos_i<serial_list.length;c_pos_i++){
+		serial_obj = Orion.FindObject(serial_list[c_pos_i]);
+		c_point = [serial_obj.X(),serial_obj.Y(),serial_obj.Z()]
+		if(!contain_points(iteration_list,c_point))
+			add_item(iteration_list, c_point)
+	}
+	
+	player_point = [Player.X(),Player.Y()]
+	nearest_index = get_nearest_index(player_point ,iteration_list)
+	nearest_pos = iteration_list[nearest_index]
+	improved_WalkTo(nearest_pos[0],nearest_pos[1],nearest_pos[2],1,0)
+//	improved_WalkTo(iteration_list[nearest_index][0],iteration_list[nearest_index][1],iteration_list[nearest_index][2],1,0)
+	
+}
+// -------------------------------------------------------------------------------------------------
+
+function test(){
+	goto_bank2()
+}
+
+
+
+//guards_alert()
